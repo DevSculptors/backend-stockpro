@@ -48,7 +48,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     }
     const token = await GenerateToken({userId: userFound.id.toString(), roles: listOfRoles} as GenerateTokenPayload); //Cambiar el rol uwu
     res.cookie("token", token);
-    return res.status(200).json({userFound, roles: listOfRoles});
+    return res.status(200).json(userFound);
   }catch(err){
     console.log(err.message);
     return res.status(500).json({ message: err.message });
@@ -67,7 +67,7 @@ export const logout = async (req: Request, res: Response): Promise<Response> => 
 
 export const verifyToken = async (req: Request, res: Response): Promise<Response> => {
   try{
-    const {token } = req.cookies;
+    const { token } = req.cookies;
     // Logica aspera uwu
     if(!token){
       return res.status(401).json({message: "Unauthorized"});
