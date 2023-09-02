@@ -1,5 +1,7 @@
 // import { User } from "@prisma/client";
 
+import { Role } from "@prisma/client";
+
 export interface User  {
   id: number;
   username: string;
@@ -13,5 +15,13 @@ export type UpdateUser = Partial<CreateUser>;
 
 export interface GenerateTokenPayload {
   userId: string;
-  rol: string;
+  roles: Pick<Role, 'name'>[]
 }
+
+export interface RolesUser {
+  roles_user: {
+    role: { name: string; 
+    }; 
+  }[]; 
+}
+  
