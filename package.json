@@ -4,6 +4,7 @@
   "description": "Project to manage the inventory and billing of a supermarket",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "dev": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
