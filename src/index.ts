@@ -8,7 +8,6 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 
 import router from "./routers/index.routes";
-import { connectDB } from "./config/db";
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from "./config/swagger";
 
@@ -31,7 +30,6 @@ app.use("/api", router());
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const server = http.createServer(app);
-// connectDB();
 
 server.listen(process.env.PORT, () => {
   
