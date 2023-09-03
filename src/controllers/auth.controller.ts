@@ -1,29 +1,39 @@
 import { Request, Response } from "express";
 import { GenerateToken } from "../helpers/Token";
-import { EncryptPassword , ComparePassword} from "../helpers/Utils";
-import { CreateUser , User, GenerateTokenPayload} from "../interfaces/User";
-import { getUserByUsername, createUser } from "../services/user.services";
+import { EncryptPassword , ComparePassword, simplifyRoles, validateSchema, formatErrorMessage} from "../helpers/Utils";
+import { CreateUser , User, GenerateTokenPayload, RolesUser} from "../interfaces/User";
+import { getUserByUsername, createUser, getRoleFromUser, getUserByEmail } from "../services/user.services";
+import { userSchema } from "../schemas/auth.schema";
+import { Message } from "../helpers/Errors";
 
 export const register = async (req: Request, res: Response): Promise<Response> => {
   try{
-    const {username, password, isActive, personId} = req.body;
-
-    const userFound: User = await getUserByUsername(username);
-    if(userFound){
-      return res.status(400).json({message: "The username already exists"});
+    const {username, password, isActive, email, personId} = req.body;
+    const usernameFound: User = await getUserByUsername(username);
+    const userEmailFound: User = await getUserByEmail(email);
+    if(usernameFound || userEmailFound){
+      return res.status(400).json({message: "The username or email already exists"});
     }
     const passwordHash = await EncryptPassword(password);
-
+    
     const newUser: CreateUser = {
       username,
-      password: passwordHash,
+      password,
       isActive,
+      email,
       personId
     };
-
+    const validateUser = await validateSchema(userSchema, newUser)
+    if("error" in validateUser){
+      const errorMessages: Array<Message> = validateUser.error.issues;
+      const messages = formatErrorMessage(errorMessages)
+      return res.status(400).json(messages);
+    }
+    newUser.password = passwordHash;
     const userSaved:User = await createUser(newUser);
-    
-    const token = await GenerateToken({userId: userSaved.id.toString(), rol: "admin"} as GenerateTokenPayload);
+    const roles: RolesUser = await getRoleFromUser(userSaved.id);
+    const listOfRoles = simplifyRoles(roles)
+    const token = await GenerateToken({userId: userSaved.id.toString(), roles: listOfRoles} as GenerateTokenPayload);
     res.cookie("token", token);
     return res.status(201).json(userSaved);
   }catch(err){
@@ -34,8 +44,8 @@ export const register = async (req: Request, res: Response): Promise<Response> =
 
 export const login = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { username, password } = req.body;
-    const userFound: User = await getUserByUsername(username);
+    const { email, password } = req.body;
+    const userFound: User = await getUserByEmail(email);
     if (!userFound) {
       return res.status(400).json({ message: "The username does not exists" });
     }
@@ -43,7 +53,9 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     if (!isMatch) {
       return res.status(400).json({ message: "The password is invalid" });
     }
-    const token = await GenerateToken({userId: userFound.id.toString(), rol: "admin"} as GenerateTokenPayload); //Cambiar el rol uwu
+    const roles: RolesUser = await getRoleFromUser(userFound.id);
+    const listOfRoles = simplifyRoles(roles)
+    const token = await GenerateToken({userId: userFound.id.toString(), roles: listOfRoles} as GenerateTokenPayload); //Cambiar el rol uwu
     res.cookie("token", token);
     return res.status(200).json(userFound);
   }catch(err){
@@ -64,7 +76,7 @@ export const logout = async (req: Request, res: Response): Promise<Response> => 
 
 export const verifyToken = async (req: Request, res: Response): Promise<Response> => {
   try{
-    const {token } = req.cookies;
+    const { token } = req.cookies;
     // Logica aspera uwu
     if(!token){
       return res.status(401).json({message: "Unauthorized"});

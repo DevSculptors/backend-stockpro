@@ -2,11 +2,10 @@
 export interface Person {
   id: number;
   id_document: string;
-  type_document: string;
+  type_document: any;
   name: string;
   last_name: string;
   phone: string;
-  email: string;
 }
 
 //Persona sin ID, para crear

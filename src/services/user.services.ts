@@ -1,4 +1,4 @@
-import { User, CreateUser, UpdateUser } from "interfaces/User";
+import { User, CreateUser, UpdateUser, RolesUser } from "interfaces/User";
 
 export const getUsers = async (): Promise<User[]> => {
   const users: User[] = await prisma.user.findMany();
@@ -38,5 +38,31 @@ export const updateUser = async (id: number, user: UpdateUser): Promise<User | n
     data: user
   });
   return newUser;
+}
+
+//{ roles_user: { role: { name: string; }; }[]; }
+export const getRoleFromUser = async (id: number): Promise<RolesUser | null> =>{
+  const roles: RolesUser = await prisma.user.findUnique({
+    where : {id: id},
+    select: {
+      roles_user: {
+        select: {
+          role:{
+            select: { name:true }
+          }
+        }
+      }
+    }, 
+  });
+  return roles;
+}
+
+export const getUserByEmail = async (email:string): Promise<User | null> =>{
+  const user: User = await prisma.user.findFirst({
+    where: {
+      email: email
+    }
+  });
+  return user;
 }
 

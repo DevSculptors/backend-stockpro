@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { TOKEN_SECRET } from "../config/config";
 import { Request, Response, NextFunction } from "express";
 import { GenerateTokenPayload } from "interfaces/User";
@@ -21,3 +21,12 @@ export const GenerateToken = (
   });
 };
 
+
+export const verifyToken = (token: string): Promise<any> =>{
+  return new Promise((resolve, reject) =>{
+    jwt.verify(token, TOKEN_SECRET, (error, decodedToken) =>{
+      if (error) reject(error);
+      resolve(decodedToken);
+    })
+  });
+}
