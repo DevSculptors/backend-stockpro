@@ -19,6 +19,11 @@ export interface GenerateTokenPayload {
   roles: Pick<Role, 'name'>[]
 }
 
+export interface GenerateTokenForget {
+  userId: string;
+  email: string;
+}
+
 export interface RolesUser {
   roles_user: {
     role: { name: string; 
