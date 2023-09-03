@@ -57,3 +57,12 @@ export const getRoleFromUser = async (id: number): Promise<RolesUser | null> =>{
   return roles;
 }
 
+export const getUserByEmail = async (email:string): Promise<User | null> =>{
+  const user: User = await prisma.user.findFirst({
+    where: {
+      email: email
+    }
+  });
+  return user;
+}
+

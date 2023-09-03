@@ -4,4 +4,11 @@ export interface Role{
     description: string;
 }
 
+export type RoleName = Pick<Role, 'name'>;
+
+
+export interface RolesNames{
+    roles: RoleName[]
+}
+
 
