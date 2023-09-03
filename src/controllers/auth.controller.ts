@@ -27,7 +27,6 @@ import { Message } from "../helpers/Errors";
 
 import jwt from "jsonwebtoken";
 import { Resend } from "resend";
-import { parse } from "path";
 
 export const register = async (
   req: Request,
@@ -187,7 +186,7 @@ export const forgetPassword = async (
     });
 
     // Poner la URL del backend desplegado, en un process.env.URL_BACKEND
-    const forgetUrl = `http://localhost:4000/api/change-password?token=${token}`;
+    const forgetUrl = `${process.env.BACKEND_URL}/change-password?token=${token}`;
 
     //Enviar el correo
     // @ts-ignore
