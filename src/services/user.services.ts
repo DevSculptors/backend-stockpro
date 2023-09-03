@@ -1,5 +1,6 @@
 import { User, CreateUser, UpdateUser, RolesUser } from "interfaces/User";
 
+
 export const getUsers = async (): Promise<User[]> => {
   const users: User[] = await prisma.user.findMany();
   return users;

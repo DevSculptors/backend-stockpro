@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { TOKEN_SECRET } from "../config/config";
 
 export const authRequired = (
   req: Request,
@@ -10,7 +9,7 @@ export const authRequired = (
   const { token } = req.cookies;
   if (!token) return res.status(401).json({ message: "Access Denied" });
   try {
-    const verified = jwt.verify(token, TOKEN_SECRET);
+    const verified = jwt.verify(token, process.env.TOKEN_SECRET);
     req.body.user = verified;    
     next();
   } catch (err) {

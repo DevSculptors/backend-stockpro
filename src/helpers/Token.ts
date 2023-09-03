@@ -1,5 +1,4 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { TOKEN_SECRET } from "../config/config";
 import { Request, Response, NextFunction } from "express";
 import { GenerateTokenPayload } from "interfaces/User";
 
@@ -9,9 +8,9 @@ export const GenerateToken = (
   return new Promise((resolve, reject) => {
     jwt.sign(
       payload,
-      TOKEN_SECRET,
+      process.env.TOKEN_SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: 86400,
       },
       (err, token) => {
         if (err) reject(err);
@@ -24,7 +23,7 @@ export const GenerateToken = (
 
 export const verifyToken = (token: string): Promise<any> =>{
   return new Promise((resolve, reject) =>{
-    jwt.verify(token, TOKEN_SECRET, (error, decodedToken) =>{
+    jwt.verify(token, process.env.TOKEN_SECRET, (error, decodedToken) =>{
       if (error) reject(error);
       resolve(decodedToken);
     })
