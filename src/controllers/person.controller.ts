@@ -21,8 +21,8 @@ export const createPersonController = async (
   res: Response
 ): Promise<Response> => {
   try{
-    const { id_document, type_document, name, last_name, phone, email } = req.body;
-    if (!id_document || !type_document || !name || !last_name || !phone || !email) {
+    const { id_document, type_document, name, last_name, phone } = req.body;
+    if (!id_document || !type_document || !name || !last_name || !phone) {
       return res.status(400).json({ message: "Please. Send all fields" });
     }
 
@@ -31,8 +31,7 @@ export const createPersonController = async (
       type_document,
       name,
       last_name,
-      phone,
-      email
+      phone
     };
     const person: Person = await createPerson(newPerson);
     return res.status(201).json(person);

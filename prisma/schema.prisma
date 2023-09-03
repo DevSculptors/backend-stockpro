@@ -25,7 +25,6 @@ model Person{
   name String
   last_name String
   phone String
-  email String
   user User[]
   sales Sale[]
   inventory_purchases Inventory_Purchase[]
@@ -36,6 +35,7 @@ model User{
   username String @unique
   password String
   isActive Boolean @default(true)
+  email String @unique
   person Person @relation(fields: [personId], references:  [id])
   personId Int
   roles_user Role_User[]

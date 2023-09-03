@@ -6,7 +6,6 @@ export interface Person {
   name: string;
   last_name: string;
   phone: string;
-  email: string;
 }
 
 //Persona sin ID, para crear
