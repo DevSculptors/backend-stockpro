@@ -1,3 +1,4 @@
+import { Role, RoleUser, createdRole, createdRoleUser } from "../interfaces/Role";
 import { User, CreateUser, UpdateUser, RolesUser } from "interfaces/User";
 
 
@@ -20,6 +21,22 @@ export const getUserById = async (id: string): Promise<User | null> => {
     }
   });
   return user;
+}
+
+export const getRoleById = async (id: string): Promise<Role | null> => {
+  const role: Role | null = await prisma.role.findFirst({
+    where: {
+      id: id
+    }
+  });
+  return role;
+}
+
+export const assignRoleToUser = async (role_user: createdRoleUser): Promise<RoleUser> => {
+  const assignedRole:RoleUser = await prisma.role_User.create({
+    data: role_user
+  });
+  return assignedRole;
 }
 
 export const getUserByUsername = async (username: string): Promise<User | null> => {
@@ -73,5 +90,12 @@ export const changeStateOfUser = async (id: string, state: boolean): Promise<any
     data: {isActive: state}
   });
   return updatedUser;
+}
+
+export const createNewRole = async (role: createdRole): Promise<createdRole> =>{
+  const newRole = await prisma.role.create({
+    data: role
+  });
+  return newRole;
 }
 
