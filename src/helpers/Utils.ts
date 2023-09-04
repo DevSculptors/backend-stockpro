@@ -4,6 +4,9 @@ import {z,  ZodError } from "zod";
 import { Request, Response } from "express";
 import { Message } from "./Errors";
 import { RoleName, RolesNames } from "../interfaces/Role";
+import { verifyToken } from "./Token";
+
+const ROLE_ADMIN = 'admin';
 
 export const EncryptPassword = async (password: string): Promise<string> => {
   const salt = await bcrypt.genSalt(10);
@@ -31,5 +34,11 @@ export const formatErrorMessage = (messages: Message[]) => {
 }
 
 export const validateRole = (roles: RoleName[]) => {
-  return roles.some(item => item.name === 'admin')
+  return roles.some(item => item.name === ROLE_ADMIN)
+}
+
+export const decodeToken = async (req: Request): Promise<RoleName[]> =>{
+  const { token } = req.cookies;
+  const validToken = await verifyToken(token);
+  return validToken.roles;
 }

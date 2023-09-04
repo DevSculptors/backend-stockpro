@@ -9,3 +9,10 @@ export const userSchema = z.object({
     email: z.string().regex(emailRegex),
     personId: z.number()
 });
+
+export const userSchemaForUpdate = z.object({
+    username: z.string().min(10).max(255),
+    isActive: z.boolean(),
+    email: z.string().regex(emailRegex),
+    personId: z.number()
+});
