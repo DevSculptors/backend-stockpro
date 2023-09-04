@@ -67,3 +67,11 @@ export const getUserByEmail = async (email:string): Promise<User | null> =>{
   return user;
 }
 
+export const changeStateOfUser = async (id: number, state: boolean): Promise<any> =>{
+  const updatedUser = await prisma.user.update({
+    where: {id: id},
+    data: {isActive: state}
+  });
+  return updatedUser;
+}
+

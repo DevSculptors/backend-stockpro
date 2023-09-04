@@ -1,5 +1,5 @@
 import {prisma } from "../helpers/Prisma";
-import { CreatePerson,UpdatePerson, Person } from "interfaces/Person";
+import { CreatePerson,UpdatePerson, Person } from "../interfaces/Person";
 
 export const getPersons = async (): Promise<Person[]> => {
   const persons: Person[] = await prisma.person.findMany();
@@ -20,5 +20,13 @@ export const getPersonById = async (id: number): Promise<Person | null> => {
     }
   });
   return person;
+}
+
+export const updatePersonById= async (id: number, personData: UpdatePerson): Promise<UpdatePerson | null> =>{
+  const updatedPerson: UpdatePerson = await prisma.person.update({
+    where: { id:id },
+    data: personData
+  });
+  return updatedPerson;
 }
 
