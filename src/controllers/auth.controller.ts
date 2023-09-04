@@ -187,8 +187,7 @@ export const forgetPassword = async (
       expiresIn: 86400,
     });
 
-    // Poner la URL del backend desplegado, en un process.env.URL_BACKEND
-    const forgetUrl = `${process.env.FRONTEND_URL}/change-password?token=${token}`;
+    const forgetUrl = `${process.env.FRONTEND_URL}/login/change-password?token=${token}`;
 
     //Enviar el correo
     // @ts-ignore
@@ -222,6 +221,9 @@ export const changePassword = async (
     const body: BodyProps = req.body;
     const { newPassword, confirmPassword } = body;
 
+    console.log("Passwords:  ", newPassword, confirmPassword);
+    
+
     if (!newPassword || !confirmPassword) {
       return res.status(400).json({ message: "The password is invalid" });
     }
@@ -230,30 +232,26 @@ export const changePassword = async (
       return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    //Obtener el token de la URL
-    const query = req.url;
-    const token = query.split("=")[1];
-    // console.log("Que es esto xd: ", token);
-    // console.log("Que es esto xd: ", query);
-    // const token = query.token as string;
-
+    const query = req.headers;
+    const token = query.token as string;
+    
     if (!token) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "Not Token" });
     }
-
     try {
       const isTokenValid = jwt.verify(
         token,
         process.env.TOKEN_SECRET as string
       );
 
+      console.log("El token es valido: ");
+      
+
       if (!isTokenValid) {
         return res.status(401).json({ message: "Token no valido" });
       }
 
-      const { userId, email } = isTokenValid as GenerateTokenForget;
-
-      console.log("Que es esto xd: ", userId, email);
+      const { email } = isTokenValid as GenerateTokenForget;
 
       const userFind = await getUserByEmail(email);
 
@@ -264,7 +262,9 @@ export const changePassword = async (
       const passwordHash = await EncryptPassword(newPassword);
       userFind.password = passwordHash;
 
-      const update = await updateUser(userFind.id, userFind);
+      await updateUser(userFind.id, userFind);
+      console.log("Se cambio la contraseña en la DB");
+      
 
       //Enviar el correo
       // @ts-ignore
@@ -272,12 +272,11 @@ export const changePassword = async (
         from: "onboarding@resend.dev",
         to: email,
         subject: "Cambio de Contraseña Exitoso",
-        html: `<p>Se cambio la contrasena uwu</p>`,
+        html: `<p>Se cambio la contrasena</p>`,
       });
-
       return res.status(200).json({ message: "Password changed" });
     } catch (err) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: err.message });
     }
   } catch (err) {
     console.log(err.message);
