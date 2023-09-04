@@ -188,7 +188,7 @@ export const forgetPassword = async (
     });
 
     // Poner la URL del backend desplegado, en un process.env.URL_BACKEND
-    const forgetUrl = `${process.env.BACKEND_URL}/change-password?token=${token}`;
+    const forgetUrl = `${process.env.FRONTEND_URL}/change-password?token=${token}`;
 
     //Enviar el correo
     // @ts-ignore
