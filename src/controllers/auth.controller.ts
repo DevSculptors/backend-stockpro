@@ -125,8 +125,10 @@ export const verifyToken = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { token } = req.cookies;
 
+    const {token} = req.headers as {token: string};
+    // console.log("Que es esto xd: ", token);
+    
     if (!token) {
       return res.status(401).json({ message: "Not Token ,Unauthorized" });
     }
