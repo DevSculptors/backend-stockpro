@@ -125,8 +125,10 @@ export const verifyToken = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { token } = req.cookies;
 
+    const {token} = req.headers as {token: string};
+    // console.log("Que es esto xd: ", token);
+    
     if (!token) {
       return res.status(401).json({ message: "Not Token ,Unauthorized" });
     }
@@ -186,7 +188,7 @@ export const forgetPassword = async (
     });
 
     // Poner la URL del backend desplegado, en un process.env.URL_BACKEND
-    const forgetUrl = `${process.env.BACKEND_URL}/change-password?token=${token}`;
+    const forgetUrl = `${process.env.FRONTEND_URL}/change-password?token=${token}`;
 
     //Enviar el correo
     // @ts-ignore

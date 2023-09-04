@@ -7,6 +7,7 @@ export const authRequired = (
   next: NextFunction
 ) => {
   const { token } = req.cookies;
+  
   if (!token) return res.status(401).json({ message: "Access Denied" });
   try {
     const verified = jwt.verify(token, process.env.TOKEN_SECRET);
