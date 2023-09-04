@@ -13,7 +13,7 @@ export const createPerson = async (person: CreatePerson): Promise<Person> => {
   return newPerson;
 }
 
-export const getPersonById = async (id: number): Promise<Person | null> => {
+export const getPersonById = async (id: string): Promise<Person | null> => {
   const person: Person | null = await prisma.person.findUnique({
     where: {
       id: id
@@ -22,7 +22,7 @@ export const getPersonById = async (id: number): Promise<Person | null> => {
   return person;
 }
 
-export const updatePersonById= async (id: number, personData: UpdatePerson): Promise<UpdatePerson | null> =>{
+export const updatePersonById= async (id: string, personData: UpdatePerson): Promise<UpdatePerson | null> =>{
   const updatedPerson: UpdatePerson = await prisma.person.update({
     where: { id:id },
     data: personData

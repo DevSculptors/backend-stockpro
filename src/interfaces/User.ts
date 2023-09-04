@@ -3,12 +3,12 @@
 import { Role } from "@prisma/client";
 
 export interface User  {
-  id: number;
+  id: string;
   username: string;
   password: string;
   isActive: boolean;
   email: string;
-  personId: number;
+  personId: string;
 }
 
 export type CreateUser = Omit<User, "id">;

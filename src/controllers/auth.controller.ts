@@ -136,7 +136,7 @@ export const verifyToken = async (
 
       const { userId } = verified as GenerateTokenPayload;
 
-      const userFind = await getUserById(Number(userId));
+      const userFind = await getUserById(userId);
 
       if (!userFind) {
         return res.status(400).json({ message: "The user does not exists" });

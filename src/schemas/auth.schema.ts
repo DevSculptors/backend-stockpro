@@ -7,12 +7,12 @@ export const userSchema = z.object({
     password: z.string().min(6, {message: "Password must be at least 6 characters"}),
     isActive: z.boolean(),
     email: z.string().regex(emailRegex),
-    personId: z.number()
+    personId: z.string()
 });
 
 export const userSchemaForUpdate = z.object({
     username: z.string().min(10).max(255),
     isActive: z.boolean(),
     email: z.string().regex(emailRegex),
-    personId: z.number()
+    personId: z.string()
 });
