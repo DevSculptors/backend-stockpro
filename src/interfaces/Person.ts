@@ -1,6 +1,6 @@
 
 export interface Person {
-  id: number;
+  id: string;
   id_document: string;
   type_document: any;
   name: string;

@@ -55,7 +55,7 @@ export const changeStateUser = async (req: Request, res: Response): Promise<Resp
         if(!validateRole(decodedToken)){
             return res.status(400).json({message: 'The current user doesnt have permissions'});
         }
-        const id  = parseInt(req.params.id); 
+        const id  = req.params.id; 
         const user: User = await getUserById(id);
         if(!user){
             return res.status(404).json({message: 'User not found'});
