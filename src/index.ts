@@ -8,8 +8,10 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 
 import router from "./routers/index.routes";
-import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from "./config/swagger";
+
+import { authRoutes, personRoutes } from "./routers/route";
+
+import swaggerDocs from "./helpers/Swagger";
 
 const app = express();
 
@@ -26,12 +28,11 @@ app.use(morgan("dev"));
 app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use("/api", router());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-const server = http.createServer(app);
-
-server.listen(process.env.PORT, () => {
-  
+app.listen(process.env.PORT, () => {
   console.log(`server running on http://localhost:${process.env.PORT}/`);
+
+  authRoutes(app);
+
+  swaggerDocs(app, Number(process.env.PORT));
 });

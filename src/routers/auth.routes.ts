@@ -10,15 +10,7 @@ import {
 } from "../controllers/auth.controller";
 
 export default (router: Router): void => {
-  /**
-   * @swagger
-   * /register:
-   *  post:
-   *    summary: Registro de usuarios
-   *    responses:
-   *      200:
-   *        description: Resupuesta exitosa
-   */
+
   router.post("/register", register);
 
   router.post("/login", login);
