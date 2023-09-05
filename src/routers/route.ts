@@ -5,12 +5,7 @@ import {login} from '../controllers/auth.controller'
 
 import validate from '../middlewares/ValidateSchema';
 
-
-export function personRoutes(app: Express): void {
-
-}
-
-export function authRoutes(app: Express): void {
+function authRoutes(app: Express): void {
 
   /**
    * @openapi
@@ -54,3 +49,5 @@ export function authRoutes(app: Express): void {
   app.post("/api/login", validate(loginSchema),login);
 
 }
+
+export default authRoutes;

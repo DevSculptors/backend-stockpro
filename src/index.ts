@@ -1,5 +1,4 @@
-import express from "express";
-import http from "http";
+import express, {Express} from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import compression from "compression";
@@ -9,7 +8,8 @@ import dotenv from "dotenv";
 
 import router from "./routers/index.routes";
 
-import { authRoutes, personRoutes } from "./routers/route";
+import authRoutes from "./routers/route";
+import personRoutes from "./routers/pers.routes";
 
 import swaggerDocs from "./helpers/Swagger";
 
@@ -29,10 +29,18 @@ app.use(compression());
 app.use(cookieParser());
 app.use(bodyParser.json());
 
+//Puede mandarla al index de routers
+function routes(app: Express): void {
+  authRoutes(app);
+  personRoutes(app);
+
+}
+
 app.listen(process.env.PORT, () => {
+
   console.log(`server running on http://localhost:${process.env.PORT}/`);
 
-  authRoutes(app);
+  routes(app);
 
   swaggerDocs(app, Number(process.env.PORT));
 });
