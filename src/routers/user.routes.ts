@@ -1,10 +1,10 @@
 import { assignRole, changeStateUser, createRole, getAllUsers, updateUserFields } from "../controllers/user.controller";
-import { Router } from "express";
+import { Express } from "express";
 
-export default (router: Router): void => {
-  router.get("/users", getAllUsers);
-  router.put("/users", updateUserFields);
-  router.put("/users/:id", changeStateUser);
-  router.post("/users/role", createRole);
-  router.post("/users/assignrole", assignRole);
+export default (app: Express): void => {
+  app.get("/api/users", getAllUsers);
+  app.put("/api/users", updateUserFields);
+  app.put("/api/users/:id", changeStateUser);
+  app.post("/api/users/role", createRole);
+  app.post("/api/users/assignrole", assignRole);
 }

@@ -8,9 +8,6 @@ import dotenv from "dotenv";
 
 import router from "./routers/index.routes";
 
-import authRoutes from "./routers/route";
-import personRoutes from "./routers/pers.routes";
-
 import swaggerDocs from "./helpers/Swagger";
 
 const app = express();
@@ -27,20 +24,13 @@ app.use(
 app.use(morgan("dev"));
 app.use(compression());
 app.use(cookieParser());
+// app.use("/api", router(app));
 app.use(bodyParser.json());
-
-//Puede mandarla al index de routers
-function routes(app: Express): void {
-  authRoutes(app);
-  personRoutes(app);
-
-}
 
 app.listen(process.env.PORT, () => {
 
   console.log(`server running on http://localhost:${process.env.PORT}/`);
 
-  routes(app);
-
+  router(app);
   swaggerDocs(app, Number(process.env.PORT));
 });
