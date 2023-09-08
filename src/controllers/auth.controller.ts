@@ -57,7 +57,7 @@ export const register = async (
       password,
       isActive,
       email,
-      personId: person.id,
+      personId: person.id
     };
     newUser.password = passwordHash;
     const userSaved: User = await createUser(newUser);
@@ -68,7 +68,7 @@ export const register = async (
       roles: listOfRoles,
     } as GenerateTokenPayload);
     res.header("Authorization", `Bearer ${token}`);
-    return res.status(201).json(userSaved);
+    return res.status(201).json({userSaved, token: token});
   } catch (err) {
     console.log(err.message);
     return res.status(500).json({ message: err.message });
@@ -104,7 +104,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
 
     res.header("Authorization", `Bearer ${token}`);
 
-    return res.status(200).json(userFound);
+    return res.status(200).json({userFound, token: token});
   } catch (err) {
     console.log(err);
     return res.status(500).json({ message: err });
@@ -132,7 +132,7 @@ export const verifyToken = async (
 ): Promise<Response> => {
   try {
 
-    const token = req.headers.authorization.split(" ")[1];
+    const token = req.headers.authorization?.split(" ")[1];
     
     if (!token) {
       return res.status(401).json({ message: "Not Token ,Unauthorized" });
@@ -238,7 +238,7 @@ export const changePassword = async (
     }
 
     
-    const token = req.headers.authorization.split(" ")[1];
+    const token = req.headers.authorization?.split(" ")[1];
     
     if (!token) {
       return res.status(401).json({ message: "Not Token" });
