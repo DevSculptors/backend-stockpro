@@ -1,5 +1,4 @@
-import express from "express";
-import http from "http";
+import express, {Express} from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import compression from "compression";
@@ -8,8 +7,8 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 
 import router from "./routers/index.routes";
-import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from "./config/swagger";
+
+import swaggerDocs from "./helpers/Swagger";
 
 const app = express();
 
@@ -25,13 +24,13 @@ app.use(
 app.use(morgan("dev"));
 app.use(compression());
 app.use(cookieParser());
+// app.use("/api", router(app));
 app.use(bodyParser.json());
-app.use("/api", router());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-const server = http.createServer(app);
+app.listen(process.env.PORT, () => {
 
-server.listen(process.env.PORT, () => {
-  
   console.log(`server running on http://localhost:${process.env.PORT}/`);
+
+  router(app);
+  swaggerDocs(app, Number(process.env.PORT));
 });

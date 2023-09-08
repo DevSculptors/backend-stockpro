@@ -27,13 +27,15 @@ import { Message } from "../helpers/Errors";
 
 import jwt from "jsonwebtoken";
 import { Resend } from "resend";
+import { CreatePerson } from "../interfaces/Person";
+import { createPerson } from "../services/person.services";
 
 export const register = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    const { username, password, isActive, email, personId } = req.body;
+    const { username, password, isActive, email, id_document, type_document, name, last_name, phone} = req.body;
     const usernameFound: User = await getUserByUsername(username);
     const userEmailFound: User = await getUserByEmail(email);
     if (usernameFound || userEmailFound) {
@@ -42,20 +44,21 @@ export const register = async (
         .json({ message: "The username or email already exists" });
     }
     const passwordHash = await EncryptPassword(password);
-
+    const newPerson: CreatePerson = {
+      id_document,
+      type_document,
+      name,
+      last_name,
+      phone
+    }
+    const person = await createPerson(newPerson);
     const newUser: CreateUser = {
       username,
       password,
       isActive,
       email,
-      personId,
+      personId: person.id,
     };
-    const validateUser = await validateSchema(userSchema, newUser);
-    if ("error" in validateUser) {
-      const errorMessages: Array<Message> = validateUser.error.issues;
-      const messages = formatErrorMessage(errorMessages);
-      return res.status(400).json(messages);
-    }
     newUser.password = passwordHash;
     const userSaved: User = await createUser(newUser);
     const roles: RolesUser = await getRoleFromUser(userSaved.id);
@@ -64,7 +67,7 @@ export const register = async (
       userId: userSaved.id.toString(),
       roles: listOfRoles,
     } as GenerateTokenPayload);
-    res.cookie("token", token);
+    res.header("Authorization", `Bearer ${token}`);
     return res.status(201).json(userSaved);
   } catch (err) {
     console.log(err.message);
@@ -72,9 +75,12 @@ export const register = async (
   }
 };
 
+
+
 export const login = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { email, password } = req.body;
+
     const userFound: User = await getUserByEmail(email);
     if (!userFound) {
       return res.status(400).json({ message: "The email does not exists" });
@@ -96,12 +102,12 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       roles: listOfRoles,
     } as GenerateTokenPayload);
 
-    res.cookie("token", token);
+    res.header("Authorization", `Bearer ${token}`);
 
     return res.status(200).json(userFound);
   } catch (err) {
-    console.log(err.message);
-    return res.status(500).json({ message: err.message });
+    console.log(err);
+    return res.status(500).json({ message: err });
   }
 };
 
@@ -110,7 +116,7 @@ export const logout = async (
   res: Response
 ): Promise<Response> => {
   try {
-    res.clearCookie("token");
+    delete req.headers.authorization;
     return res.status(200).json({ message: "Logout successfully" });
   } catch (err) {
     console.log(err.message);
@@ -126,8 +132,7 @@ export const verifyToken = async (
 ): Promise<Response> => {
   try {
 
-    const {token} = req.headers as {token: string};
-    // console.log("Que es esto xd: ", token);
+    const token = req.headers.authorization.split(" ")[1];
     
     if (!token) {
       return res.status(401).json({ message: "Not Token ,Unauthorized" });
@@ -232,8 +237,8 @@ export const changePassword = async (
       return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    const query = req.headers;
-    const token = query.token as string;
+    
+    const token = req.headers.authorization.split(" ")[1];
     
     if (!token) {
       return res.status(401).json({ message: "Not Token" });

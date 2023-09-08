@@ -1,5 +1,7 @@
 import { Role, RoleUser, createdRole, createdRoleUser } from "../interfaces/Role";
 import { User, CreateUser, UpdateUser, RolesUser } from "interfaces/User";
+import { prisma } from "../helpers/Prisma";
+
 
 
 export const getUsers = async (): Promise<User[]> => {
