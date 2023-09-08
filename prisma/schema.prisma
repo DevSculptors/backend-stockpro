@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
@@ -19,7 +20,7 @@ enum type_doc_domain {
 }
 
 model Person{
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   id_document String
   type_document type_doc_domain 
   name String
@@ -31,13 +32,13 @@ model Person{
 }
 
 model User{
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   username String @unique
   password String
   isActive Boolean @default(true)
   email String @unique
   person Person @relation(fields: [personId], references:  [id])
-  personId Int
+  personId String @db.Uuid
   roles_user Role_User[]
   turns Turn[]
   sales Sale[]
@@ -45,82 +46,82 @@ model User{
 }
 
 model Role{
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name String
   description String
   roles_user Role_User[] 
 }
 
 model Role_User{
-  id Int @id @default(autoincrement())
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user User @relation(fields: [id_user], references: [id])
-  id_user Int
+  id_user String @db.Uuid
   role Role @relation(fields: [id_role], references: [id])
-  id_role Int
+  id_role String @db.Uuid
 }
 
 model Turn {
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   date_time DateTime
   cash Decimal
   is_open Boolean
   withdrawals Withdrawal[]
   user User @relation(fields: [id_user], references: [id])
-  id_user Int
+  id_user String @db.Uuid
   cash_register Cash_Register @relation(fields: [id_cash_register], references: [id])
-  id_cash_register Int
+  id_cash_register String @db.Uuid
 }
 
 model Withdrawal{
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   turn Turn @relation(fields: [id_turn], references: [id])
-  id_turn Int 
+  id_turn String @db.Uuid
   withdrawal_date DateTime
   value Decimal
 }
 
 model Cash_Register{
-  id Int @id @default(autoincrement())
-  name String
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name String @db.Uuid
   location String
   turns Turn[]
 }
 
 model Sale{
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   date_sale DateTime
   price_sale Decimal
   person Person @relation(fields: [id_client], references: [id])
-  id_client Int
+  id_client String @db.Uuid
   user User @relation(fields: [id_user], references: [id])
-  id_user Int
+  id_user String @db.Uuid
   oders Order_Sale []
 }
 
 model Product{
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name_product String
   description String
   measure_unit Measure
   sale_price Decimal
   stock Int
   category Category_Product @relation(fields: [id_category], references: [id])
-  id_category Int
+  id_category String @db.Uuid
   brand Brand_product @relation(fields: [id_brand], references: [id])
-  id_brand Int
+  id_brand String @db.Uuid
   oders Order_Sale []
   purchases Purchase_Detail []
   sales_records Sale_Record[]
 }
 
 model Order_Sale{
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   amount_product Int
   price Decimal
   product Product @relation(fields: [id_product], references: [id])
-  id_product Int
+  id_product String @db.Uuid
   sale Sale @relation(fields: [id_sale], references: [id])
-  id_sale Int
+  id_sale String @db.Uuid
 }
 
 enum Measure {
@@ -131,25 +132,25 @@ enum Measure {
 }
 
 model Inventory_Purchase{
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   date_purchase DateTime
   person Person @relation(fields: [id_provider], references: [id])
-  id_provider Int
+  id_provider String @db.Uuid
   user User @relation(fields: [id_user], references: [id])
-  id_user Int
+  id_user String @db.Uuid
   purchase_detail Purchase_Detail[]
   sale_records Sale_Record[]
 }
 
 model Purchase_Detail{
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   quantity Int
   due_date DateTime
   purchase_unit_price Decimal
   inventory_purchase Inventory_Purchase @relation(fields: [id_purchase], references: [id])
-  id_purchase Int
+  id_purchase String @db.Uuid
   product Product @relation(fields: [id_product], references: [id])
-  id_product Int
+  id_product String @db.Uuid
 }
 
 model Sale_Record{
@@ -157,13 +158,13 @@ model Sale_Record{
   sale_price Decimal
   update_date DateTime
   inventory_purchase Inventory_Purchase @relation(fields: [id_purchase], references: [id])
-  id_purchase Int
+  id_purchase String @db.Uuid
   product Product @relation(fields: [id_product], references: [id]) 
-  id_product Int
+  id_product String @db.Uuid
 }
 
 model Brand_product{
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name String
   is_active Boolean @default(true)
   description String
@@ -171,7 +172,7 @@ model Brand_product{
 }
 
 model Category_Product{
-  id Int @id @default(autoincrement())
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name String
   is_active Boolean @default(true)
   description String
