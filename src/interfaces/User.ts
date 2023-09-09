@@ -13,6 +13,7 @@ export interface User  {
 
 export type CreateUser = Omit<User, "id">;
 export type UpdateUser = Partial<CreateUser>;
+export type GetUsers = Omit<User, "password">;
 
 export interface GenerateTokenPayload {
   userId: string;

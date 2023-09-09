@@ -89,29 +89,29 @@ export default function(app: Express): Router {
    *        type: boolean
    *      - user:
    *        type: object
-    *        properties:
-    *          id:
-    *            type: string
-    *          username:
-    *            type: string
-    *          password:
-    *            type: string
-    *          isActive:
-    *            type: boolean
-    *          email:
-    *            type: string
-    *          personId:
-    *            type: string
+   *        properties:
+   *          id:
+   *            type: string
+   *          username:
+   *            type: string
+   *          password:
+   *            type: string
+   *          isActive:
+   *            type: boolean
+   *          email:
+   *            type: string
+   *          personId:
+   *            type: string
    *      - roles:
    *        type: array    
    *    example:
-   *     isAuthorized: true
-   *     user: jhondoe 
-   *     password: string
-   *     isActive: true
-   *     email: jhon.doe@example.com
-   *     personId: string
-   *     roles: ['admin']
+   *      isAuthorized: true
+   *      user: jhondoe 
+   *      password: string
+   *      isActive: true
+   *      email: jhon.doe@example.com
+   *      personId: string
+   *      roles: ['admin']
    *   ForgetPasswordInput:
    *    type: object
    *    required:
@@ -140,9 +140,102 @@ export default function(app: Express): Router {
    *      - message  
    *    example:
    *      - message: Password changed successfully
+   *   UserResponse:
+   *    type: object
+   *    required:
+   *      - id
+   *      - username
+   *      - isActive
+   *      - email
+   *      - personId
+   *    example:
+   *      id: string
+   *      username: jhondoe
+   *      isActive: true
+   *      email: string 
+   *      personId: string 
+   *   GetAllPersonsResponse:
+   *    type: array
+   *    items:
+   *      $ref: '#components/schemas/PersonResponse'
+   *   GetAllUsersResponse:
+   *    type: array
+   *    items:
+   *      $ref: '#components/schemas/UserResponse'   
+   *   UpdatePerson:
+   *    type: object
+   *    required:
+   *      - id
+   *      - username
+   *      - isActive
+   *      - email
+   *      - roleName
+   *      - personId    
+   *      - id_document
+   *      - type_document
+   *      - name
+   *      - last_name
+   *      - phone
+   *    example:
+   *      id: string  
+   *      username: jhondoe
+   *      isActive: true
+   *      email: string
+   *      roleName: string
+   *      personId: string
+   *      id_document: string
+   *      type_document: string
+   *      name: string
+   *      last_name: string
+   *      phone: string  
+   *   PersonResponse:
+   *    type: object
+   *    required:
+   *      - id
+   *      - id_document
+   *      - type_document
+   *      - name
+   *      - last_name
+   *      - phone
+   *    example:
+   *      id: string
+   *      id_document: string
+   *      type_document: string
+   *      name: string
+   *      last_name: string
+   *      phone: string
+   *   RoleResponse:
+   *    type: object
+   *    required:
+   *     - name: string
+   *    example:
+   *      name: string  
+   *   RolesResponse: 
+   *    type: array
+   *    items:
+   *      $ref: '#components/schemas/RoleResponse'
+   *   UpdatePersonResponse:
+   *    type: object
+   *    required:
+   *     - updatedUser
+   *     - updatedPerson
+   *     - listOfRoles
+   *    properties:
+   *      updatedUser:
+   *        $ref: '#components/schemas/UserResponse'
+   *      updatedPerson:
+   *        $ref: '#components/schemas/PersonResponse'
+   *      listOfRoles:
+   *        $ref: '#components/schemas/RolesResponse'
+   *  TokenResponse:
+   *    type: object
+   *    required:
+   *      - token
+   *    example:
+   *      token: string
    */
   authRoutes(app);
   userRoutes(app);
-  personRoutes(router);
+  personRoutes(app);
   return router;
 };

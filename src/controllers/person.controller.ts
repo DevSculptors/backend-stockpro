@@ -11,10 +11,6 @@ export const getPersonsController = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const decodedToken = await decodeToken(req);
-    if(!validateRole(decodedToken)){
-        return res.status(400).json({message: 'The current user doesnt have permissions'});
-    }
     const persons: Person[] = await getPersons();
     return res.status(200).json(persons);
   } catch (err) {
