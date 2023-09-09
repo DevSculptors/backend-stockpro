@@ -39,6 +39,9 @@ export const validateRole = (roles: RoleName[]) => {
 
 export const decodeToken = async (req: Request): Promise<RoleName[]> =>{
   const token = req.headers.authorization?.split(' ')[1];
+  if(!token){
+    return null;
+  }
   const validToken = await verifyToken(token);
   return validToken.roles;
 }

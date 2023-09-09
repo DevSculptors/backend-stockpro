@@ -21,6 +21,7 @@ import {
   getUserByEmail,
   updateUser,
   getUserById,
+  assignRoleToUser,
 } from "../services/user.services";
 import { userSchema } from "../schemas/auth.schema";
 import { Message } from "../helpers/Errors";
@@ -29,13 +30,14 @@ import jwt from "jsonwebtoken";
 import { Resend } from "resend";
 import { CreatePerson } from "../interfaces/Person";
 import { createPerson } from "../services/person.services";
+import { assignRole } from "./user.controller";
 
 export const register = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    const { username, password, isActive, email, id_document, type_document, name, last_name, phone} = req.body;
+    const { username, password, isActive, email, id_document, type_document, name, last_name, phone, rolesList} = req.body;
     const usernameFound: User = await getUserByUsername(username);
     const userEmailFound: User = await getUserByEmail(email);
     if (usernameFound || userEmailFound) {
