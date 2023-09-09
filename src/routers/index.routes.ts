@@ -26,7 +26,7 @@ export default function(app: Express): Router {
    *    properties:
    *      username:
    *        type: string
-   *        description: The username for the user min 8 characters
+   *        description: The username for the user min 5 characters
    *        required: true
    *      password:
    *        type: string
@@ -227,7 +227,37 @@ export default function(app: Express): Router {
    *        $ref: '#components/schemas/PersonResponse'
    *      listOfRoles:
    *        $ref: '#components/schemas/RolesResponse'
-   *  TokenResponse:
+   *   CreatePerson:
+   *    type: object
+   *    required:
+   *      - id_document
+   *      - type_document
+   *      - name
+   *      - last_name
+   *      - phone 
+   *    example:
+   *      id_document: '111111'
+   *      type_document: 'CC'
+   *      name: jhon
+   *      last_name: doe
+   *      phone: '3216549871'
+   *   UpdatePersonRequest:
+   *    type: object
+   *    required:
+   *      - id
+   *      - id_document
+   *      - type_document
+   *      - name
+   *      - last_name
+   *      - phone
+   *    example:
+   *      id: string
+   *      id_document: '111111'
+   *      type_document: 'CC'
+   *      name: jhon
+   *      last_name: doe
+   *      phone: '3216549871'
+   *   TokenResponse:
    *    type: object
    *    required:
    *      - token

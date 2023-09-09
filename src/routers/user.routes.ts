@@ -1,5 +1,7 @@
-import { assignRole, changeStateUser, createRole, getAllUsers, updateUserFields } from "../controllers/user.controller";
+import { getAllUsers, updateUserFields } from "../controllers/user.controller";
 import { Express } from "express";
+import validate from "../middlewares/ValidateSchema";
+import { updateUserSchema } from "../schemas/userRequests.schema";
 
 export default (app: Express): void => {
  /**
@@ -56,5 +58,5 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-  app.put("/api/users", updateUserFields);
+  app.put("/api/users", validate(updateUserSchema), updateUserFields);
 }

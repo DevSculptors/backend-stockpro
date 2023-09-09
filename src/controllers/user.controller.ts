@@ -12,10 +12,6 @@ import { updatePersonById } from "../services/person.services";
 
 export const getAllUsers = async (req: Request, res: Response): Promise<Response> =>{
     try {
-        // const decodedToken = await decodeToken(req);
-        // if(!validateRole(decodedToken)){
-        //     return res.status(400).json({message: 'The current user doesnt have permissions'});
-        // }
         const users: GetUsers[] = await getUsers();
         return res.status(200).json(users);
     } catch (err) {
@@ -26,13 +22,17 @@ export const getAllUsers = async (req: Request, res: Response): Promise<Response
 
 export const updateUserFields = async (req: Request, res: Response): Promise<Response> =>{
     try {
-        const { id, username, isActive, email, password, personId, 
+        const { id, username, isActive, email, password, 
             id_document, type_document, name, last_name, phone, roleName } = req.body;
+        const userFound = await getUserById(id);
+        if(!userFound){
+            return res.status(404).json({message: 'User not found'});
+        }
         const partialUser: UpdateUser = {
             username,  
             isActive,
             email,
-            personId,
+            personId: userFound.personId,
             password: await EncryptPassword(password)
         };
         const partialPerson: UpdatePerson = {
@@ -54,35 +54,15 @@ export const updateUserFields = async (req: Request, res: Response): Promise<Res
         if(!roleFound){
             await assignRoleToUser(roleUser);   
         }
-        const validateUser = await validateSchema(userSchemaForUpdate, partialUser)
-        if("error" in validateUser){
-            const errorMessages: Array<Message> = validateUser.error.issues;
-            const messages = formatErrorMessage(errorMessages)
-            return res.status(400).json(messages);
-        }
+        
         const updatedUser: User = await updateUser(id,partialUser);
-        const updatedPerson: UpdatePerson = await updatePersonById(personId, partialPerson); 
+        const updatedPerson: UpdatePerson = await updatePersonById(partialUser.personId, partialPerson); 
         const roles: RolesUser = await getRoleFromUser(updatedUser.id);
         const listOfRoles = simplifyRoles(roles);
         return res.status(200).json({updatedUser, updatedPerson, listOfRoles}); 
     } catch (err) {
         console.log(err.message);
         return res.status(500).json({ message: err.message });
-    }
-}
-
-export const changeStateUser = async (req: Request, res: Response): Promise<Response> => {
-    try {
-        const id  = req.params.id; 
-        const user: User = await getUserById(id);
-        if(!user){
-            return res.status(404).json({message: 'User not found'});
-        }
-        const updatedUser: UpdateUser = await changeStateOfUser(id, !user.isActive);
-        return res.status(200).json({isACtive: updatedUser.isActive});
-    } catch (error) {
-        console.log(error);
-        res.send(500).json({message: error.message})
     }
 }
 
