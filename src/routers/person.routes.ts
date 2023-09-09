@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Express } from "express";
 
 import {
   getPersonsController,
@@ -7,8 +7,30 @@ import {
 } from "../controllers/person.controller";
 import { authRequired } from "../middlewares/ValidateToken";
 
-export default (router: Router): void => {
-  router.get("/person", authRequired, getPersonsController);
-  router.post("/person", authRequired, createPersonController);
-  router.put("/person", authRequired, updatePerson);
+export default (app: Express): void => {
+   /**
+   * @openapi
+   * /api/person:
+   *  get:
+   *     tags:
+   *     - Person
+   *     summary: Get All persons
+   *     security: 
+   *      - bearerAuth: []
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+  *               $ref: '#/components/schemas/GetAllPersonsResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+  app.get("/api/person", authRequired, getPersonsController);
+
 };

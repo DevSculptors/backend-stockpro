@@ -15,7 +15,7 @@ function authRoutes(app: Express): void {
 
   /**
    * @openapi
-   * /register:
+   * /api/register:
    *  post:
    *     tags:
    *     - Register
@@ -32,7 +32,7 @@ function authRoutes(app: Express): void {
    *        content:
    *          application/json:
    *            schema:
-   *              $ref: '#/components/schemas/LoginResponse'
+   *              $ref: '#/components/schemas/loginResponse'
    *       400:
    *        description: Bad request
    *        content:
@@ -41,7 +41,7 @@ function authRoutes(app: Express): void {
    *               $ref: '#/components/schemas/BadRequest'
    * 
    */
-  app.post("/register", validate(createUser), register);
+  app.post("/api/register", validate(createUser), register);
 
   /**
    * @openapi
@@ -62,7 +62,7 @@ function authRoutes(app: Express): void {
    *        content:
    *          application/json:
    *            schema:
-   *              $ref: '#/components/schemas/LoginResponse'
+   *              $ref: '#/components/schemas/loginResponse'
    *      409:
    *        description: Conflict
    *      400:
@@ -93,7 +93,7 @@ function authRoutes(app: Express): void {
 
   /**
    * @openapi
-   * /verify-token:
+   * /api/verify-token:
    *  get:
    *     tags:
    *     - Verify-token
@@ -114,7 +114,7 @@ function authRoutes(app: Express): void {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-  app.get("/verify-token", verifyToken);
+  app.get("/api/verify-token", verifyToken);
 
   /**
    * @openapi

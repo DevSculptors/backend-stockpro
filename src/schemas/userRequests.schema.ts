@@ -34,6 +34,16 @@ import { emailRegex } from "./auth.schema";
  *          type: string
  *        personId:
  *          type: string
+ *    loginResponse:
+ *      type: object
+ *      required:
+ *       - userFound
+ *       - token
+ *      properties:
+ *        userFound:
+ *          $ref: '#/components/schemas/LoginResponse'
+ *        token:
+ *          $ref: '#/components/schemas/Token' 
  */
 export const loginSchema = z.object({
   body: object({
