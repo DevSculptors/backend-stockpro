@@ -7,11 +7,13 @@ export const authRequired = async (
   res: Response,
   next: NextFunction
 ) => {
+
   try {
     const token = req.headers.authorization?.split(" ")[1];
-    // console.log("Token: ", token);
-
+    
+    if (!token) return res.status(401).json({ message: "Not token, access denied" });
     const decodedToken = await decodeToken(req);
+    
     if (!validateRole(decodedToken)) {
       return res
         .status(400)

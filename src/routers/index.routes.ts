@@ -23,10 +23,11 @@ export default function(app: Express): Router {
    *      - name
    *      - last_name
    *      - phone
+   *      - role
    *    properties:
    *      username:
    *        type: string
-   *        description: The username for the user min 8 characters
+   *        description: The username for the user min 5 characters
    *        required: true
    *      password:
    *        type: string
@@ -60,6 +61,10 @@ export default function(app: Express): Router {
    *       type: string
    *       description: The phone for the user
    *       required: true
+   *      role:
+   *        type: string
+   *        description: The role for the user
+   *        required: true
    *    example:  
    *       username: johndoe
    *       password: stringPassword123
@@ -70,6 +75,7 @@ export default function(app: Express): Router {
    *       name: John
    *       last_name: Doe
    *       phone: '1234567890'
+   *       role: admin
    *   BadRequest:
    *    type: object
    *    required:
@@ -162,6 +168,20 @@ export default function(app: Express): Router {
    *    type: array
    *    items:
    *      $ref: '#components/schemas/UserResponse'   
+   *   UsersWithPersonDataResponse:
+   *    type: object
+   *    required:
+   *      - id
+   *      - username
+   *      - isActive
+   *      - email 
+   *      - person
+   *    example:
+   *      id: string
+   *      username: jhondoe
+   *      isActive: true
+   *      email: string
+   *      person: { id: string, id_document: string, type_document: string, name: string, last_name: string, phone: string}
    *   UpdatePerson:
    *    type: object
    *    required:
@@ -227,12 +247,48 @@ export default function(app: Express): Router {
    *        $ref: '#components/schemas/PersonResponse'
    *      listOfRoles:
    *        $ref: '#components/schemas/RolesResponse'
-   *  TokenResponse:
+   *   CreatePerson:
+   *    type: object
+   *    required:
+   *      - id_document
+   *      - type_document
+   *      - name
+   *      - last_name
+   *      - phone 
+   *    example:
+   *      id_document: '111111'
+   *      type_document: 'CC'
+   *      name: jhon
+   *      last_name: doe
+   *      phone: '3216549871'
+   *   UpdatePersonRequest:
+   *    type: object
+   *    required:
+   *      - id
+   *      - id_document
+   *      - type_document
+   *      - name
+   *      - last_name
+   *      - phone
+   *    example:
+   *      id: string
+   *      id_document: '111111'
+   *      type_document: 'CC'
+   *      name: jhon
+   *      last_name: doe
+   *      phone: '3216549871'
+   *   TokenResponse:
    *    type: object
    *    required:
    *      - token
    *    example:
    *      token: string
+   *   ChangeStateResponse:
+   *    type: object
+   *    required:
+   *      - isActive
+   *    example:
+   *      isActive: false 
    */
   authRoutes(app);
   userRoutes(app);

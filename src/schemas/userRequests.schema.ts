@@ -108,6 +108,45 @@ export const changePasswordSchema = object({
   }),
 });
 
+export const updateUserSchema = object({
+  body: object({
+    id: string({
+      required_error: "id is required"
+    }),
+    username: string({
+      required_error: "username is required"
+    }),
+    isActive: boolean({
+      required_error: "isActive is required"
+    }),
+    email: string({
+      required_error: "email is required"
+    }).regex(emailRegex),
+    password: string({
+      required_error: "password is required"
+    }).min(6).max(255),
+    personId: string({
+      required_error: "personId is required"
+    }),
+    id_document: string({
+      required_error: "id_document is required"
+    }),
+    type_document: z.enum(['CC', 'CE', 'TI', 'NIT', 'PP'], {required_error: "type_document is required"}),
+    name: string({required_error: "name is required"}),
+    last_name: string({required_error: "last_name is required"}),
+    phone: string({required_error:"phone is required"}).min(10),
+    roleName: string({required_error: "roleName is required"}), 
+  }),
+});
+
+export const changeStateSchema = object({
+  body: object({
+    isActive: boolean({
+      required_error: "isActive is required"
+    })
+  }),
+});
+
 export type UpdateUser = Partial<TypeOf<typeof createUser>>
 
 // Omite el email del body
@@ -115,6 +154,8 @@ export type CreateUserSinEmail = Omit<
   TypeOf<typeof createUser>,
   "body.email"
 >
+
+
 
 
 

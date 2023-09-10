@@ -1,6 +1,6 @@
 // import { User } from "@prisma/client";
 
-import { Role } from "@prisma/client";
+import { Person, Role } from "@prisma/client";
 
 export interface User  {
   id: string;
@@ -14,6 +14,7 @@ export interface User  {
 export type CreateUser = Omit<User, "id">;
 export type UpdateUser = Partial<CreateUser>;
 export type GetUsers = Omit<User, "password">;
+export type GetPersonsId = Pick<User, "personId">;
 
 export interface GenerateTokenPayload {
   userId: string;
@@ -30,5 +31,16 @@ export interface RolesUser {
     role: { name: string; 
     }; 
   }[]; 
+}
+
+export interface UserWithPersonData extends Omit<User, "personId" | "password"> {
+  person: {
+    id: string;
+    id_document: string;
+    type_document: string;
+    name: string;
+    last_name: string;
+    phone: string;
+  }
 }
   
