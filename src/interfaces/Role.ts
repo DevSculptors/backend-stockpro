@@ -5,7 +5,7 @@ export interface Role{
 }
 
 export type RoleName = Pick<Role, 'name'>;
-export type createdRole = Omit<Role, 'id'>
+export type createdRole = Omit<Role, 'id'>;
 
 export interface RolesNames{
     roles: RoleName[]

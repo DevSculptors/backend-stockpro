@@ -5,6 +5,7 @@ import {
   createPersonController,
   updatePerson,
   getPersonsClients,
+  getPersonInfoById,
 } from "../controllers/person.controller";
 import { authRequired } from "../middlewares/ValidateToken";
 import validate from "../middlewares/ValidateSchema";
@@ -69,13 +70,20 @@ export default (app: Express): void => {
 
   /**
    * @openapi
-   * /api/person:
+   * /api/person/{id}:
    *  put:
    *     tags:
    *     - Person
    *     summary: Update a person 
    *     security: 
    *      - bearerAuth: []
+   *     parameters:
+   *      - in: path
+   *        name: id
+   *        required: true
+   *        description: person_id
+   *        schema:
+   *          type: string 
    *     requestBody:
    *       required: true
    *       content:
@@ -96,7 +104,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-  app.put("/api/person", authRequired, validate(updatePersonSchema), updatePerson);
+  app.put("/api/person/:id", authRequired, validate(updatePersonSchema), updatePerson);
 
   /**
    * @openapi
@@ -122,4 +130,36 @@ export default (app: Express): void => {
    *              $ref: '#/components/schemas/BadRequest' 
    */
   app.get("/api/client", authRequired, getPersonsClients);
+
+  /**
+   * @openapi
+   * /api/person/{id}:
+   *  get:
+   *     tags:
+   *     - Person
+   *     summary: Get person info by id
+   *     security: 
+   *      - bearerAuth: []
+   *     parameters:
+   *      - in: path
+   *        name: id
+   *        required: true
+   *        description: person_id 
+   *        schema: 
+   *          type: string
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+  *               $ref: '#/components/schemas/PersonResponse'
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+  app.get("/api/person/:id", authRequired, getPersonInfoById);
 };
