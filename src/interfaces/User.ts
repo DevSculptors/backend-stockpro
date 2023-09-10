@@ -1,6 +1,7 @@
 // import { User } from "@prisma/client";
 
 import { Person, Role } from "@prisma/client";
+import { RoleName } from "./Role";
 
 export interface User  {
   id: string;
@@ -41,6 +42,10 @@ export interface UserWithPersonData extends Omit<User, "personId" | "password"> 
     name: string;
     last_name: string;
     phone: string;
-  }
+  },
+  roles_user: {
+    role: { name: string; 
+    }; 
+  }[];
 }
   

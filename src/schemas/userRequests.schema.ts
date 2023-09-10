@@ -110,9 +110,6 @@ export const changePasswordSchema = object({
 
 export const updateUserSchema = object({
   body: object({
-    id: string({
-      required_error: "id is required"
-    }),
     username: string({
       required_error: "username is required"
     }),
@@ -141,6 +138,9 @@ export const updateUserSchema = object({
 
 export const changeStateSchema = object({
   body: object({
+    id: string({
+      required_error: "id is required"
+    }).min(36).max(36),
     isActive: boolean({
       required_error: "isActive is required"
     })

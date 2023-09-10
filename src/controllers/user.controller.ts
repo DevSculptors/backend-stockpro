@@ -9,7 +9,10 @@ import { updatePersonById } from "../services/person.services";
 
 export const getAllUsers = async (req: Request, res: Response): Promise<Response> =>{
     try {
-        const users: UserWithPersonData[] = await getUsers();
+        const users: any[] = await getUsers();
+        users.forEach(user => {
+            user.roles_user = simplifyRoles(user);
+        });
         return res.status(200).json(users);
     } catch (err) {
         console.log("Error:", err.message);
@@ -19,9 +22,7 @@ export const getAllUsers = async (req: Request, res: Response): Promise<Response
 
 export const changeState = async (req: Request, res: Response): Promise<Response> =>{
     try {
-        const id = req.params.id;
-        if(id.length < 36) return res.status(404).json({message: 'invalid id'});
-        const { isActive } = req.body;
+        const { id, isActive } = req.body;
         const userFound = await getUserById(id);
         if(!userFound) return res.status(404).json({message: 'User not found'});
         const state = await changeStateOfUser(id, Boolean(isActive));
@@ -34,7 +35,8 @@ export const changeState = async (req: Request, res: Response): Promise<Response
 
 export const updateUserFields = async (req: Request, res: Response): Promise<Response> =>{
     try {
-        const { id, username, isActive, email, password, 
+        const id = req.params.id;
+        const { username, isActive, email, password, 
             id_document, type_document, name, last_name, phone, roleName } = req.body;
         const userFound = await getUserById(id);
         if(!userFound){
@@ -44,7 +46,7 @@ export const updateUserFields = async (req: Request, res: Response): Promise<Res
             username,  
             isActive,
             email,
-            personId: userFound.personId,
+            personId: userFound.person.id,
             password: await EncryptPassword(password)
         };
         const partialPerson: UpdatePerson = {
@@ -109,6 +111,21 @@ export const assignRole = async (req: Request, res: Response): Promise<Response>
     } catch (error) {
         console.log(error);
         return res.status(500).json({message: error.message})
+    }
+}
+
+export const getUserInfoById = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const { id } = req.params;
+        const userFound: any = await getUserById(id);
+        if(!userFound){
+            return res.status(404).json({message: 'User not found'});
+        }
+        userFound.roles_user = simplifyRoles(userFound);
+        return res.status(200).json(userFound);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
     }
 }
 

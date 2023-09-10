@@ -25,9 +25,6 @@ export const createPersonSchema = object({
 
 export const updatePersonSchema = object({
     body: object({
-        id: string({
-            required_error: "id is required",
-        }).min(36).max(36),
         id_document: string({
             required_error: "id_document is required",
         }).min(8),

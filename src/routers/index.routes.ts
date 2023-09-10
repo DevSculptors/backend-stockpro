@@ -182,10 +182,10 @@ export default function(app: Express): Router {
    *      isActive: true
    *      email: string
    *      person: { id: string, id_document: string, type_document: string, name: string, last_name: string, phone: string}
+   *      roles_user: [{ name: admin }]
    *   UpdatePerson:
    *    type: object
    *    required:
-   *      - id
    *      - username
    *      - isActive
    *      - email
@@ -197,7 +197,6 @@ export default function(app: Express): Router {
    *      - last_name
    *      - phone
    *    example:
-   *      id: string  
    *      username: jhondoe
    *      isActive: true
    *      email: string
@@ -264,14 +263,12 @@ export default function(app: Express): Router {
    *   UpdatePersonRequest:
    *    type: object
    *    required:
-   *      - id
    *      - id_document
    *      - type_document
    *      - name
    *      - last_name
    *      - phone
    *    example:
-   *      id: string
    *      id_document: '111111'
    *      type_document: 'CC'
    *      name: jhon
@@ -283,6 +280,14 @@ export default function(app: Express): Router {
    *      - token
    *    example:
    *      token: string
+   *   ChangeStateRequest:
+   *    type: object
+   *    required:
+   *      - id
+   *      - isActive
+   *    example:
+   *      id: string
+   *      isActive: false
    *   ChangeStateResponse:
    *    type: object
    *    required:
