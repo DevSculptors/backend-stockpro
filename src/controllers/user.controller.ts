@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { EncryptPassword, simplifyRoles } from "../helpers/Utils";
 import { RolesUser, UpdateUser, User, UserWithPersonData } from "../interfaces/User";
-import { assignRoleToUser, changeStateOfUser, createNewRole, getRoleById, getRoleByName, getRoleFromUser, getUserById, getUsers, updateUser, verifyRoleUser } from "../services/user.services";
+import { assignRoleToUser, changeStateOfUser, createNewRole, deleteUserById, getRoleById, getRoleByName, getRoleFromUser, getUserById, getUsers, updateUser, verifyRoleUser } from "../services/user.services";
 import { createdRole, createdRoleUser } from "../interfaces/Role";
 import { UpdatePerson } from "../interfaces/Person";
 import { updatePersonById } from "../services/person.services";
@@ -123,6 +123,21 @@ export const getUserInfoById = async (req: Request, res: Response): Promise<Resp
         }
         userFound.roles_user = simplifyRoles(userFound);
         return res.status(200).json(userFound);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const deleteUser = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const id = req.params.id;
+        const userFound = await getUserById(id);
+        if(!userFound){
+            return res.status(404).json({message: 'User not found'});
+        }
+        const userDeleted = await deleteUserById(id);
+        return res.status(200).json(userDeleted);
     } catch (error) {
         console.log(error);
         return res.status(500).json({message: error.message});

@@ -6,6 +6,7 @@ import {
   updatePerson,
   getPersonsClients,
   getPersonInfoById,
+  deletePerson,
 } from "../controllers/person.controller";
 import { authRequired } from "../middlewares/ValidateToken";
 import validate from "../middlewares/ValidateSchema";
@@ -162,4 +163,42 @@ export default (app: Express): void => {
    *              $ref: '#/components/schemas/BadRequest' 
    */
   app.get("/api/person/:id", authRequired, getPersonInfoById);
+
+  /**
+   * @openapi
+   * /api/person/{id}:
+   *  delete:
+   *     tags:
+   *     - Person
+   *     summary: delete a person by id
+   *     security: 
+   *      - bearerAuth: []
+   *     parameters:
+   *      - in: path
+   *        name: id
+   *        required: true
+   *        description: person id
+   *        schema:
+   *          type: string
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/PersonResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   *       404:
+   *        description: Not found
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/NotFound' 
+   */
+  app.delete("/api/person/:id", authRequired, deletePerson);
 };
