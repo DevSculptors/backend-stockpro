@@ -157,3 +157,10 @@ export const createNewRole = async (role: createdRole): Promise<createdRole> =>{
   return newRole;
 }
 
+export const deleteUserById = async (id: string): Promise<any> =>{
+  const deletedUser = await prisma.user.delete({
+    where: {id: id}
+  });
+  return deletedUser;
+}
+
