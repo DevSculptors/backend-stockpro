@@ -294,6 +294,12 @@ export default function(app: Express): Router {
    *      - isActive
    *    example:
    *      isActive: false 
+   *   NotFound:
+   *    type: object
+   *    required:
+   *      - message
+   *    example:
+   *      message: Not found
    */
   authRoutes(app);
   userRoutes(app);

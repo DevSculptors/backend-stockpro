@@ -1,4 +1,4 @@
-import { getAllUsers, updateUserFields, changeState, getUserInfoById } from "../controllers/user.controller";
+import { getAllUsers, updateUserFields, changeState, getUserInfoById, deleteUser } from "../controllers/user.controller";
 import { Express } from "express";
 import validate from "../middlewares/ValidateSchema";
 import { changeStateSchema, updateUserSchema } from "../schemas/userRequests.schema";
@@ -131,5 +131,41 @@ export default (app: Express): void => {
    */
   app.get("/api/users/:id", authRequired ,getUserInfoById);
 
-  app.delete("/api/users");
+  /**
+   * @openapi
+   * /api/users/{id}:
+   *  delete:
+   *     tags:
+   *     - User
+   *     summary: delete user by id
+   *     security: 
+   *      - bearerAuth: []
+   *     parameters:
+   *      - in: path
+   *        name: id
+   *        required: true
+   *        description: user id
+   *        schema:
+   *          type: string
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/PersonResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   *       404:
+   *        description: Not found
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/NotFound' 
+   */
+  app.delete("/api/users/:id", authRequired, deleteUser);
 }

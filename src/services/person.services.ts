@@ -47,3 +47,12 @@ export const getClients = async (): Promise<Person[]> => {
   return clients;
 }
 
+export const deletePersonById = async (id: string): Promise<Person | null> => {
+  const deletedPerson: Person | null = await prisma.person.delete({
+    where: {
+      id: id
+    }
+  });
+  return deletedPerson;
+}
+

@@ -4,7 +4,7 @@ export interface Product{
   id: string;
   name_product: string;
   description: string;
-  measure_unit: Measure;
+  measure_unit: any;
   sale_price: number;
   stock: number;
 }
