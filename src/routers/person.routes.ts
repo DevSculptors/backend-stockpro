@@ -83,7 +83,7 @@ export default (app: Express): void => {
    *          schema:
    *            $ref: '#/components/schemas/UpdatePersonRequest'
    *     responses:
-   *       200:
+   *       201:
    *        description: success
    *        content:
    *          application/json:

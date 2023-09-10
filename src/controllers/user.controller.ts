@@ -1,22 +1,34 @@
 import { Request, Response } from "express";
-import { verifyToken } from "../helpers/Token";
-import { EncryptPassword, decodeToken, formatErrorMessage, simplifyRoles, validateRole, validateSchema } from "../helpers/Utils";
-import { GetUsers, RolesUser, UpdateUser, User } from "../interfaces/User";
+import { EncryptPassword, simplifyRoles } from "../helpers/Utils";
+import { RolesUser, UpdateUser, User, UserWithPersonData } from "../interfaces/User";
 import { assignRoleToUser, changeStateOfUser, createNewRole, getRoleById, getRoleByName, getRoleFromUser, getUserById, getUsers, updateUser, verifyRoleUser } from "../services/user.services";
-import { Role, RoleName, RoleUser, RolesNames, createdRole, createdRoleUser } from "../interfaces/Role";
-import { Message } from "../helpers/Errors";
-import { userSchemaForUpdate } from "../schemas/auth.schema";
-import { Person, UpdatePerson } from "../interfaces/Person";
+import { createdRole, createdRoleUser } from "../interfaces/Role";
+import { UpdatePerson } from "../interfaces/Person";
 import { updatePersonById } from "../services/person.services";
 
 
 export const getAllUsers = async (req: Request, res: Response): Promise<Response> =>{
     try {
-        const users: GetUsers[] = await getUsers();
+        const users: UserWithPersonData[] = await getUsers();
         return res.status(200).json(users);
     } catch (err) {
         console.log("Error:", err.message);
         return res.status(500).json({ message: err.message });
+    }
+}
+
+export const changeState = async (req: Request, res: Response): Promise<Response> =>{
+    try {
+        const id = req.params.id;
+        if(id.length < 36) return res.status(404).json({message: 'invalid id'});
+        const { isActive } = req.body;
+        const userFound = await getUserById(id);
+        if(!userFound) return res.status(404).json({message: 'User not found'});
+        const state = await changeStateOfUser(id, Boolean(isActive));
+        return res.status(201).json({isActive: state.isActive});
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).json({ message: error.message });
     }
 }
 
@@ -59,7 +71,7 @@ export const updateUserFields = async (req: Request, res: Response): Promise<Res
         const updatedPerson: UpdatePerson = await updatePersonById(partialUser.personId, partialPerson); 
         const roles: RolesUser = await getRoleFromUser(updatedUser.id);
         const listOfRoles = simplifyRoles(roles);
-        return res.status(200).json({updatedUser, updatedPerson, listOfRoles}); 
+        return res.status(201).json({updatedUser, updatedPerson, listOfRoles}); 
     } catch (err) {
         console.log(err.message);
         return res.status(500).json({ message: err.message });
