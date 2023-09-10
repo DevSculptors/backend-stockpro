@@ -59,7 +59,7 @@ export const updatePerson = async(req: Request, res :Response): Promise<Response
       phone
     };
     const updatedPerson: UpdatePerson = await updatePersonById(id, partialPerson);
-    return res.status(200).json(updatedPerson);
+    return res.status(201).json(updatedPerson);
   } catch (error) {
     console.log(error);
     res.status(500).json({message: error.message});

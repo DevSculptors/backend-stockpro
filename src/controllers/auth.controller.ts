@@ -22,6 +22,7 @@ import {
   updateUser,
   getUserById,
   assignRoleToUser,
+  getRoleByName,
 } from "../services/user.services";
 import { userSchema } from "../schemas/auth.schema";
 import { Message } from "../helpers/Errors";
@@ -31,15 +32,17 @@ import { Resend } from "resend";
 import { CreatePerson } from "../interfaces/Person";
 import { createPerson } from "../services/person.services";
 import { assignRole } from "./user.controller";
+import { createdRoleUser } from "../interfaces/Role";
 
 export const register = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    const { username, password, isActive, email, id_document, type_document, name, last_name, phone, rolesList} = req.body;
+    const { username, password, isActive, email, id_document, type_document, name, last_name, phone, role} = req.body;
     const usernameFound: User = await getUserByUsername(username);
     const userEmailFound: User = await getUserByEmail(email);
+    const roleName = await getRoleByName(role);
     if (usernameFound || userEmailFound) {
       return res
         .status(400)
@@ -53,6 +56,7 @@ export const register = async (
       last_name,
       phone
     }
+    if(!roleName) return res.status(404).json({message: 'Role not found'});
     const person = await createPerson(newPerson);
     const newUser: CreateUser = {
       username,
@@ -63,6 +67,11 @@ export const register = async (
     };
     newUser.password = passwordHash;
     const userSaved: User = await createUser(newUser);
+    const roleAssigned: createdRoleUser = {
+      id_user: userSaved.id,
+      id_role: roleName.id
+    }
+    await assignRoleToUser(roleAssigned);
     const roles: RolesUser = await getRoleFromUser(userSaved.id);
     const listOfRoles = simplifyRoles(roles);
     const token = await GenerateToken({

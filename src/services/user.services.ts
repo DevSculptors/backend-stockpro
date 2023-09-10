@@ -1,18 +1,19 @@
 import { Role, RoleUser, createdRole, createdRoleUser } from "../interfaces/Role";
-import { User, CreateUser, UpdateUser, RolesUser, GetUsers } from "../interfaces/User";
+import { User, CreateUser, UpdateUser, RolesUser, GetUsers, UserWithPersonData } from "../interfaces/User";
 import { prisma } from "../helpers/Prisma";
 
 
 
-export const getUsers = async (): Promise<GetUsers[]> => {
-  const users: GetUsers[] = await prisma.user.findMany({
+export const getUsers = async (): Promise<UserWithPersonData[]> => {
+  const users: UserWithPersonData[] = await prisma.user.findMany({
     select: {
       id: true,
       username: true,
       password: false,
-      isActive: true,
+      personId: false,
       email: true,
-      personId: true,
+      isActive: true,
+      person: true
     }
   });
   return users;

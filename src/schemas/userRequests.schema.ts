@@ -139,6 +139,14 @@ export const updateUserSchema = object({
   }),
 });
 
+export const changeStateSchema = object({
+  body: object({
+    isActive: boolean({
+      required_error: "isActive is required"
+    })
+  }),
+});
+
 export type UpdateUser = Partial<TypeOf<typeof createUser>>
 
 // Omite el email del body
@@ -146,6 +154,8 @@ export type CreateUserSinEmail = Omit<
   TypeOf<typeof createUser>,
   "body.email"
 >
+
+
 
 
 
