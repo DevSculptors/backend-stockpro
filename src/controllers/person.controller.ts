@@ -45,7 +45,8 @@ export const createPersonController = async (
 
 export const updatePerson = async(req: Request, res :Response): Promise<Response> => {
   try {
-    const { id, id_document, name, last_name, phone, type_document } = req.body;
+    const id = req.params.id;
+    const { id_document, name, last_name, phone, type_document } = req.body;
     const personFound: Person = await getPersonById(id);
     if(!personFound){
       res.status(404).json({message: 'Person not found'});
@@ -73,6 +74,18 @@ export const getPersonsClients = async (req: Request, res: Response): Promise<Re
   } catch (err) {
     console.log(err.message);
     return res.status(500).json({ message: err.message });
+  }
+}
+
+export const getPersonInfoById = async (req: Request, res: Response): Promise<Response> => {
+  try {
+    const id = req.params.id;
+    const person: Person = await getPersonById(id);
+    if(!person) return res.status(404).json({message: 'Person not found'});
+    return res.status(200).json(person);
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).json({ message: error.message });
   }
 }
 

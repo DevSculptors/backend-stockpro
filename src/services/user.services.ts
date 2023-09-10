@@ -13,7 +13,16 @@ export const getUsers = async (): Promise<UserWithPersonData[]> => {
       personId: false,
       email: true,
       isActive: true,
-      person: true
+      person: true,
+      roles_user: {
+        select: {
+          role: {
+            select: {
+              name: true
+            }
+          }
+        }
+      }
     }
   });
   return users;
@@ -26,10 +35,28 @@ export const createUser = async (user: CreateUser): Promise<User> => {
   return newUser;
 }
 
-export const getUserById = async (id: string): Promise<User | null> => {
-  const user: User | null = await prisma.user.findFirst({
+export const getUserById = async (id: string): Promise<UserWithPersonData | null> => {
+  const user: UserWithPersonData | null = await prisma.user.findFirst({
     where: {
       id: id
+    },
+    select: {
+      id: true,
+      username: true,
+      password: false,
+      personId: false,
+      email: true,
+      isActive: true,
+      person: true,
+      roles_user: {
+        select: {
+          role: {
+            select: {
+              name: true
+            }
+          }
+        }
+      }
     }
   });
   return user;
