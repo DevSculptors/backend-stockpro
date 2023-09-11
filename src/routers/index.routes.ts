@@ -4,6 +4,7 @@ import { Express } from "express";
 import userRoutes from "./user.routes";
 import personRoutes from "./person.routes";
 import authRoutes from "./auth.routes";
+import brandRoutes from "./brand.routes";
 
 const router = Router();
 export default function(app: Express): Router {
@@ -300,9 +301,44 @@ export default function(app: Express): Router {
    *      - message
    *    example:
    *      message: Not found
+   *   Brand:
+   *    type: object
+   *    required:
+   *      - id
+   *      - name
+   *      - isActive
+   *      - description
+   *    example:
+   *      id: string
+   *      name: string
+   *      is_active: true
+   *      description: string
+   *   GetAllBrandsResponse:
+   *    type: array
+   *    items: 
+   *      $ref: '#components/schemas/Brand'
+   *   CreateBrand:
+   *    type: object
+   *    required:
+   *      - name
+   *      - is_active
+   *      - description
+   *    example:
+   *      name: string
+   *      is_active: true
+   *      description: string
+   *   ChangeStateBrandRequest:
+   *    type: object
+   *    required:
+   *      - id
+   *      - is_active
+   *    example:
+   *      id: string
+   *      is_active: false
    */
   authRoutes(app);
   userRoutes(app);
   personRoutes(app);
+  brandRoutes(app);
   return router;
 };
