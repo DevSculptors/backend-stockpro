@@ -5,6 +5,7 @@ import userRoutes from "./user.routes";
 import personRoutes from "./person.routes";
 import authRoutes from "./auth.routes";
 import brandRoutes from "./brand.routes";
+import categoryRoutes from "./category.routes";
 
 const router = Router();
 export default function(app: Express): Router {
@@ -340,5 +341,6 @@ export default function(app: Express): Router {
   userRoutes(app);
   personRoutes(app);
   brandRoutes(app);
+  categoryRoutes(app);
   return router;
 };

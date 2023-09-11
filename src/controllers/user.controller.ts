@@ -36,7 +36,7 @@ export const changeState = async (req: Request, res: Response): Promise<Response
 export const updateUserFields = async (req: Request, res: Response): Promise<Response> =>{
     try {
         const id = req.params.id;
-        const { username, isActive, email, password, 
+        const { username, isActive, email, 
             id_document, type_document, name, last_name, phone, roleName } = req.body;
         const userFound = await getUserById(id);
         if(!userFound){
@@ -47,7 +47,6 @@ export const updateUserFields = async (req: Request, res: Response): Promise<Res
             isActive,
             email,
             personId: userFound.person.id,
-            password: await EncryptPassword(password)
         };
         const partialPerson: UpdatePerson = {
             id_document: id_document,
