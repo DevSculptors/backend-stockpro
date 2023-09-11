@@ -119,9 +119,6 @@ export const updateUserSchema = object({
     email: string({
       required_error: "email is required"
     }).regex(emailRegex),
-    password: string({
-      required_error: "password is required"
-    }).min(6).max(255),
     personId: string({
       required_error: "personId is required"
     }),

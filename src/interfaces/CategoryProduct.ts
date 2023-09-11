@@ -4,3 +4,5 @@ export interface CategoryProduct {
     is_active: boolean;
     description: string;
 }
+
+export type createCategoryProduct = Omit<CategoryProduct, 'id'>;
