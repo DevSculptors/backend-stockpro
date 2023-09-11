@@ -28,7 +28,7 @@ export default (app: Express): void => {
    *        content:
    *          application/json:
    *            schema:
-  *               $ref: '#/components/schemas/GetAllPersonsResponse'  
+   *              $ref: '#/components/schemas/GetAllPersonsResponse'  
    *       400:
    *        description: Bad request
    *        content:
