@@ -4,3 +4,5 @@ export interface BrandProduct {
     is_active: boolean;
     description: string;
 }
+
+export type CreateBrandProduct = Omit<BrandProduct, "id">;

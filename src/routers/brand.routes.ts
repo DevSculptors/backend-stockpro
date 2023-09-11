@@ -1,17 +1,19 @@
-import { getAllUsers, updateUserFields, changeState, getUserInfoById, deleteUser } from "../controllers/user.controller";
 import { Express } from "express";
+
+import { changeStateBrand, createBrand, deleteBrandById, editBrand, getBrandInfoById, getBrands } from "../controllers/brand.controller";
 import validate from "../middlewares/ValidateSchema";
-import { changeStateSchema, updateUserSchema } from "../schemas/userRequests.schema";
-import { authRequired } from "../middlewares/ValidateToken";
+import { changeStateBrandSchema, createBrandSchema } from "../schemas/brandRequests.schema";
+
 
 export default (app: Express): void => {
- /**
+    
+    /**
    * @openapi
-   * /api/users:
+   * /api/brand:
    *  get:
    *     tags:
-   *     - User
-   *     summary: get all users in an array
+   *     - Brand (Marca)
+   *     summary: Get All brands
    *     security: 
    *      - bearerAuth: []
    *     responses:
@@ -20,7 +22,7 @@ export default (app: Express): void => {
    *        content:
    *          application/json:
    *            schema:
-  *               $ref: '#/components/schemas/UsersWithPersonDataResponse'  
+   *              $ref: '#/components/schemas/GetAllBrandsResponse'  
    *       400:
    *        description: Bad request
    *        content:
@@ -28,37 +30,99 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-  app.get("/api/users", getAllUsers);
+    app.get("/api/brand", getBrands);
 
-  /**
+     /**
    * @openapi
-   * /api/users/{id}:
+   * /api/brand:
+   *  post:
+   *     tags:
+   *     - Brand (Marca)
+   *     summary: create a brand
+   *     security: 
+   *      - bearerAuth: []
+   *     requestBody:
+   *        required: true
+   *        content:
+   *            application/json:
+   *                schema:
+   *                    $ref: '#/components/schemas/CreateBrand'
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/Brand'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+    app.post("/api/brand", validate(createBrandSchema), createBrand);
+
+    /**
+   * @openapi
+   * /api/brand/state:
    *  put:
    *     tags:
-   *     - User
-   *     summary: update user fields
+   *     - Brand (Marca)
+   *     summary: Change state a brand
+   *     security: 
+   *      - bearerAuth: []
+   *     requestBody:
+   *       required: true
+   *       content:
+   *        application/json:
+   *          schema:
+   *            $ref: '#/components/schemas/ChangeStateBrandRequest'
+   *     responses:
+   *       201:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/ChangeStateResponse'
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+    app.put("/api/brand/state", validate(changeStateBrandSchema), changeStateBrand);
+
+    /**
+   * @openapi
+   * /api/brand/{id}:
+   *  put:
+   *     tags:
+   *     - Brand (Marca)
+   *     summary: Update a brand
    *     security: 
    *      - bearerAuth: []
    *     parameters:
    *      - in: path
    *        name: id
    *        required: true
-   *        description: user id
+   *        description: brand id
    *        schema:
    *          type: string 
    *     requestBody:
-   *      required: true
-   *      content:
+   *       required: true
+   *       content:
    *        application/json:
    *          schema:
-   *            $ref: '#/components/schemas/UpdatePerson'
+   *            $ref: '#/components/schemas/CreateBrand'
    *     responses:
    *       201:
    *        description: success
    *        content:
    *          application/json:
    *            schema:
-  *               $ref: '#/components/schemas/UpdatePersonResponse'  
+   *              $ref: '#/components/schemas/Brand'
    *       400:
    *        description: Bad request
    *        content:
@@ -66,62 +130,31 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-  app.put("/api/users/:id", validate(updateUserSchema), updateUserFields);
+    app.put("/api/brand/:id", validate(createBrandSchema), editBrand);
 
- /**
+    /**
    * @openapi
-   * /api/users/state:
-   *  put:
-   *     tags:
-   *     - User
-   *     summary: change state of user
-   *     security: 
-   *      - bearerAuth: []
-   *     requestBody:
-   *      required: true
-   *      content:
-   *        application/json:
-   *          schema:
-   *            $ref: '#/components/schemas/ChangeStateRequest'
-   *     responses:
-   *       201:
-   *        description: success
-   *        content:
-   *          application/json:
-   *            schema:
-   *              $ref: '#/components/schemas/ChangeStateResponse'  
-   *       400:
-   *        description: Bad request
-   *        content:
-   *          application/json:
-   *            schema:
-   *              $ref: '#/components/schemas/BadRequest' 
-   */
-  app.put("/api/users/state", validate(changeStateSchema), changeState);
-
-  /**
-   * @openapi
-   * /api/users/{id}:
+   * /api/brand/{id}:
    *  get:
    *     tags:
-   *     - User
-   *     summary: get user info by id
+   *     - Brand (Marca)
+   *     summary: Get a brand by id
    *     security: 
    *      - bearerAuth: []
    *     parameters:
    *      - in: path
    *        name: id
    *        required: true
-   *        description: user id
+   *        description: brand id
    *        schema:
    *          type: string
    *     responses:
-   *       200:
+   *       201:
    *        description: success
    *        content:
    *          application/json:
    *            schema:
-  *               $ref: '#/components/schemas/UsersWithPersonDataResponse'  
+   *              $ref: '#/components/schemas/Brand'
    *       400:
    *        description: Bad request
    *        content:
@@ -129,31 +162,32 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-  app.get("/api/users/:id", authRequired ,getUserInfoById);
+    app.get("/api/brand/:id", getBrandInfoById);
 
-  /**
+
+     /**
    * @openapi
-   * /api/users/{id}:
+   * /api/brand/{id}:
    *  delete:
    *     tags:
-   *     - User
-   *     summary: delete user by id
+   *     - Brand (Marca)
+   *     summary: delete a brand by id
    *     security: 
    *      - bearerAuth: []
    *     parameters:
    *      - in: path
    *        name: id
    *        required: true
-   *        description: user id
+   *        description: brand id
    *        schema:
    *          type: string
    *     responses:
-   *       200:
+   *       201:
    *        description: success
    *        content:
    *          application/json:
    *            schema:
-   *              $ref: '#/components/schemas/PersonResponse'  
+   *              $ref: '#/components/schemas/Brand'
    *       400:
    *        description: Bad request
    *        content:
@@ -167,5 +201,5 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/NotFound' 
    */
-  app.delete("/api/users/:id", authRequired, deleteUser);
+    app.delete("/api/brand/:id", deleteBrandById);
 }
