@@ -3,8 +3,10 @@ import { RolesUser } from "../interfaces/User";
 import {z,  ZodError } from "zod";
 import { Request, Response } from "express";
 import { Message } from "./Errors";
-import { RoleName, RolesNames } from "../interfaces/Role";
+import { RoleName } from "../interfaces/Role";
 import { verifyToken } from "./Token";
+import  isUUID from 'uuid-validate';
+
 
 const ROLE_ADMIN = 'admin';
 
@@ -33,8 +35,8 @@ export const formatErrorMessage = (messages: Message[]) => {
   return mappedMessages
 }
 
-export const validateRole = (roles: RoleName[]) => {
-  return roles.some(item => item.name === ROLE_ADMIN)
+export const validateRole = (role: string) => {
+  return role === ROLE_ADMIN;
 }
 
 export const decodeToken = async (req: Request): Promise<RoleName[]> =>{
@@ -43,5 +45,9 @@ export const decodeToken = async (req: Request): Promise<RoleName[]> =>{
     return null;
   }
   const validToken = await verifyToken(token);
-  return validToken.roles;
+  return validToken.role;
+}
+
+export const validateUUID = (uuid: string) => {
+  return isUUID(uuid);
 }

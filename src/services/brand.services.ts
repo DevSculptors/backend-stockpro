@@ -1,4 +1,4 @@
-import { BrandProduct, CreateBrandProduct } from "../interfaces/BrandProduct";
+import { BrandProduct, CreateBrandProduct, UpdateBrandProduct } from "../interfaces/BrandProduct";
 import {prisma } from "../helpers/Prisma";
 
 export const getAllBrands = async (): Promise<BrandProduct[]> => {
@@ -13,7 +13,7 @@ export const createNewBrand = async (newBrand: CreateBrandProduct): Promise<Bran
     return brand;
 }
 
-export const updateBrand = async (id: string, data: BrandProduct): Promise<BrandProduct> => {
+export const updateBrand = async (id: string, data: UpdateBrandProduct): Promise<BrandProduct> => {
     const brandEdited: BrandProduct = await prisma.brand_product.update({
         where: {
             id: id

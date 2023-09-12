@@ -6,7 +6,7 @@ export const userSchema = z.object({
   username: z.string().min(5).max(255),
   password: z
     .string()
-    .min(6, { message: "Password must be at least 6 characters" }),
+    .min(6, { message: "La contraseña debe tener 6 caracteres mínimo" }),
   isActive: z.boolean(),
   email: z.string().regex(emailRegex),
   personId: z.string(),

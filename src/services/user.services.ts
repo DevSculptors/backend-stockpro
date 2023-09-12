@@ -1,4 +1,4 @@
-import { Role, RoleUser, createdRole, createdRoleUser } from "../interfaces/Role";
+import { IRoleName, Role, RoleName, RoleUser, createdRole, createdRoleUser } from "../interfaces/Role";
 import { User, CreateUser, UpdateUser, RolesUser, GetUsers, UserWithPersonData } from "../interfaces/User";
 import { prisma } from "../helpers/Prisma";
 
@@ -14,13 +14,9 @@ export const getUsers = async (): Promise<UserWithPersonData[]> => {
       email: true,
       isActive: true,
       person: true,
-      roles_user: {
+      role: {
         select: {
-          role: {
-            select: {
-              name: true
-            }
-          }
+          name: true
         }
       }
     }
@@ -48,15 +44,7 @@ export const getUserById = async (id: string): Promise<UserWithPersonData | null
       email: true,
       isActive: true,
       person: true,
-      roles_user: {
-        select: {
-          role: {
-            select: {
-              name: true
-            }
-          }
-        }
-      }
+      role: true,
     }
   });
   return user;
@@ -80,23 +68,6 @@ export const getRoleByName= async(name: string): Promise<Role | null> => {
   return role;
 }
 
-export const assignRoleToUser = async (role_user: createdRoleUser): Promise<RoleUser> => {
-  const assignedRole:RoleUser = await prisma.role_User.create({
-    data: role_user
-  });
-  return assignedRole;
-}
-
-export const verifyRoleUser = async (roleUser: createdRoleUser): Promise<RoleUser | null> => {
-  const roleFound: RoleUser | null = await prisma.role_User.findFirst({
-    where: {
-      id_user: roleUser.id_user,
-      id_role: roleUser.id_role
-    }
-  });
-  return roleFound;
-}
-
 export const getUserByUsername = async (username: string): Promise<User | null> => {
   const user: User | null = await prisma.user.findFirst({
     where: {
@@ -116,16 +87,14 @@ export const updateUser = async (id: string, user: UpdateUser): Promise<User | n
   return newUser;
 }
 
-//{ roles_user: { role: { name: string; }; }[]; }
-export const getRoleFromUser = async (id: string): Promise<RolesUser | null> =>{
-  const roles: RolesUser = await prisma.user.findUnique({
+// { role: { name: string; }; 
+export const getRoleFromUser = async (id: string): Promise<IRoleName | null> =>{
+  const roles: IRoleName = await prisma.user.findUnique({
     where : {id: id},
     select: {
-      roles_user: {
+      role:{
         select: {
-          role:{
-            select: { name:true }
-          }
+          name: true
         }
       }
     }, 

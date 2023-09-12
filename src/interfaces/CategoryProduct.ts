@@ -6,3 +6,4 @@ export interface CategoryProduct {
 }
 
 export type createCategoryProduct = Omit<CategoryProduct, 'id'>;
+export type updateCategoryProduct = Partial<CategoryProduct>;

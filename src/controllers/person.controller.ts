@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { CreatePerson, Person, UpdatePerson } from "../interfaces/Person"; 
 
 import { getPersons , createPerson, updatePersonById, getPersonById, getClients, deletePersonById} from "../services/person.services";
-import { decodeToken, formatErrorMessage, validateRole, validateSchema } from "../helpers/Utils";
+import { decodeToken, formatErrorMessage, validateRole, validateSchema, validateUUID } from "../helpers/Utils";
 import { Message } from "../helpers/Errors";
 import { personSchema } from "../schemas/person.schema";
 
@@ -46,6 +46,8 @@ export const createPersonController = async (
 export const updatePerson = async(req: Request, res :Response): Promise<Response> => {
   try {
     const id = req.params.id;
+    if (!validateUUID(id)) return res.status(400).json({ message: "Invalid id" });
+
     const { id_document, name, last_name, phone, type_document } = req.body;
     const personFound: Person = await getPersonById(id);
     if(!personFound){
@@ -80,6 +82,8 @@ export const getPersonsClients = async (req: Request, res: Response): Promise<Re
 export const getPersonInfoById = async (req: Request, res: Response): Promise<Response> => {
   try {
     const id = req.params.id;
+    if (!validateUUID(id)) return res.status(400).json({ message: "Invalid id" });
+
     const person: Person = await getPersonById(id);
     if(!person) return res.status(404).json({message: 'Person not found'});
     return res.status(200).json(person);
@@ -92,16 +96,13 @@ export const getPersonInfoById = async (req: Request, res: Response): Promise<Re
 export const deletePerson = async (req: Request, res: Response): Promise<Response> => {
   try {
     const id = req.params.id;
+    if (!validateUUID(id)) return res.status(400).json({ message: "Invalid id" });
     const person: Person = await getPersonById(id);
     if(!person) return res.status(404).json({message: 'Person not found'});
     const personDeleted: Person = await deletePersonById(id);
-    return res.status(200).json(personDeleted);
+    return res.status(204).json(personDeleted);
   } catch (error) {
     console.log(error.message);
     return res.status(500).json({ message: error.message });
   }
 }
-
-
-
-

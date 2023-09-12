@@ -4,7 +4,7 @@ import { AnyZodObject, z } from "zod";
 const validate =
   (schema: AnyZodObject) =>
   (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.originalUrl);
+    console.log(req.url);
     try {
       schema.parse({
         body: req.body,
