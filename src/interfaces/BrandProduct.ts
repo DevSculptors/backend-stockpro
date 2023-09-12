@@ -6,3 +6,4 @@ export interface BrandProduct {
 }
 
 export type CreateBrandProduct = Omit<BrandProduct, "id">;
+export type UpdateBrandProduct = Partial<BrandProduct>;

@@ -3,15 +3,11 @@ import { GenerateToken } from "../helpers/Token";
 import {
   EncryptPassword,
   ComparePassword,
-  simplifyRoles,
-  validateSchema,
-  formatErrorMessage,
 } from "../helpers/Utils";
 import {
   CreateUser,
   User,
   GenerateTokenPayload,
-  RolesUser,
   GenerateTokenForget,
 } from "../interfaces/User";
 import {
@@ -21,28 +17,24 @@ import {
   getUserByEmail,
   updateUser,
   getUserById,
-  assignRoleToUser,
   getRoleByName,
 } from "../services/user.services";
-import { userSchema } from "../schemas/auth.schema";
-import { Message } from "../helpers/Errors";
 
 import jwt from "jsonwebtoken";
 import { Resend } from "resend";
 import { CreatePerson } from "../interfaces/Person";
 import { createPerson } from "../services/person.services";
-import { assignRole } from "./user.controller";
-import { createdRoleUser } from "../interfaces/Role";
+import { IRoleName } from "../interfaces/Role";
 
 export const register = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    const { username, password, isActive, email, id_document, type_document, name, last_name, phone, role} = req.body;
+    const { username, password, isActive, email, id_document, type_document, name, last_name, phone, roleName} = req.body;
     const usernameFound: User = await getUserByUsername(username);
     const userEmailFound: User = await getUserByEmail(email);
-    const roleName = await getRoleByName(role);
+    const role = await getRoleByName(roleName);
     if (usernameFound || userEmailFound) {
       return res
         .status(400)
@@ -56,27 +48,23 @@ export const register = async (
       last_name,
       phone
     }
-    if(!roleName) return res.status(404).json({message: 'Role not found'});
+    if(!role) return res.status(404).json({message: 'Role not found'});
     const person = await createPerson(newPerson);
     const newUser: CreateUser = {
       username,
       password,
       isActive,
       email,
-      personId: person.id
+      personId: person.id,
+      id_role: role.id
     };
     newUser.password = passwordHash;
     const userSaved: User = await createUser(newUser);
-    const roleAssigned: createdRoleUser = {
-      id_user: userSaved.id,
-      id_role: roleName.id
-    }
-    await assignRoleToUser(roleAssigned);
-    const roles: RolesUser = await getRoleFromUser(userSaved.id);
-    const listOfRoles = simplifyRoles(roles);
+    userSaved.roleUser = role.name;
+    const roleUser: IRoleName = await getRoleFromUser(userSaved.id);
     const token = await GenerateToken({
       userId: userSaved.id.toString(),
-      roles: listOfRoles,
+      role: roleUser?.role.name,
     } as GenerateTokenPayload);
     res.header("Authorization", `Bearer ${token}`);
     return res.status(201).json({userSaved, token: token});
@@ -104,17 +92,15 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       return res.status(400).json({ message: "The password is invalid" });
     }
 
-    const roles: RolesUser = await getRoleFromUser(userFound.id);
-
-    const listOfRoles = simplifyRoles(roles);
-
+    const role: IRoleName = await getRoleFromUser(userFound.id);
+    const userRole = role?.role.name;
     const token = await GenerateToken({
       userId: userFound.id.toString(),
-      roles: listOfRoles,
+      role: userRole,
     } as GenerateTokenPayload);
 
     res.header("Authorization", `Bearer ${token}`);
-
+    delete userFound.id_role;
     return res.status(200).json({userFound, token: token});
   } catch (err) {
     console.log(err);
@@ -128,6 +114,7 @@ export const logout = async (
 ): Promise<Response> => {
   try {
     delete req.headers.authorization;
+    delete res.header;
     return res.status(200).json({ message: "Logout successfully" });
   } catch (err) {
     console.log(err.message);
@@ -144,8 +131,6 @@ export const verifyToken = async (
   try {
 
     const token = req.headers.authorization?.split(" ")[1];
-    console.log(token);
-    
     
     if (!token) {
       return res.status(401).json({ message: "Not Token ,Unauthorized" });
@@ -161,14 +146,11 @@ export const verifyToken = async (
       if (!userFind) {
         return res.status(400).json({ message: "The user does not exists" });
       }
-
-      const rol: RolesUser = await getRoleFromUser(userFind.id);
-
-      const listOfRoles = simplifyRoles(rol);
-
+      const role = userFind.role.name;
+      delete userFind.role;
       return res
         .status(200)
-        .json({ isAuthorizaded: true, user: userFind, roles: listOfRoles });
+        .json({ isAuthorizaded: true, user: userFind, role: role });
     } catch (err) {
       return res.status(400).json({ message: err });
     }

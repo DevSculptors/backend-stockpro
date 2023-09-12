@@ -10,6 +10,8 @@ export interface User  {
   isActive: boolean;
   email: string;
   personId: string;
+  id_role: string;
+  roleUser?: string;
 }
 
 export type CreateUser = Omit<User, "id">;
@@ -19,7 +21,7 @@ export type GetPersonsId = Pick<User, "personId">;
 
 export interface GenerateTokenPayload {
   userId: string;
-  roles: Pick<Role, 'name'>[]
+  role: string
 }
 
 export interface GenerateTokenForget {
@@ -34,7 +36,7 @@ export interface RolesUser {
   }[]; 
 }
 
-export interface UserWithPersonData extends Omit<User, "personId" | "password"> {
+export interface UserWithPersonData extends Omit<User, "personId" | "password" | "id_role"> {
   person: {
     id: string;
     id_document: string;
@@ -43,9 +45,6 @@ export interface UserWithPersonData extends Omit<User, "personId" | "password"> 
     last_name: string;
     phone: string;
   },
-  roles_user: {
-    role: { name: string; 
-    }; 
-  }[];
+  role?: {name: string}
 }
   

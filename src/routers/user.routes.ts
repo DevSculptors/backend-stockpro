@@ -32,6 +32,37 @@ export default (app: Express): void => {
 
   /**
    * @openapi
+   * /api/users/state:
+   *  put:
+   *     tags:
+   *     - User
+   *     summary: change state of user
+   *     security: 
+   *      - bearerAuth: []
+   *     requestBody:
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            $ref: '#/components/schemas/ChangeStateRequest'
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/ChangeStateResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+  app.put("/api/users/state", validate(changeStateSchema), changeState);
+
+  /**
+   * @openapi
    * /api/users/{id}:
    *  put:
    *     tags:
@@ -53,7 +84,7 @@ export default (app: Express): void => {
    *          schema:
    *            $ref: '#/components/schemas/UpdatePerson'
    *     responses:
-   *       201:
+   *       200:
    *        description: success
    *        content:
    *          application/json:
@@ -67,37 +98,6 @@ export default (app: Express): void => {
    *              $ref: '#/components/schemas/BadRequest' 
    */
   app.put("/api/users/:id", validate(updateUserSchema), updateUserFields);
-
- /**
-   * @openapi
-   * /api/users/state:
-   *  put:
-   *     tags:
-   *     - User
-   *     summary: change state of user
-   *     security: 
-   *      - bearerAuth: []
-   *     requestBody:
-   *      required: true
-   *      content:
-   *        application/json:
-   *          schema:
-   *            $ref: '#/components/schemas/ChangeStateRequest'
-   *     responses:
-   *       201:
-   *        description: success
-   *        content:
-   *          application/json:
-   *            schema:
-   *              $ref: '#/components/schemas/ChangeStateResponse'  
-   *       400:
-   *        description: Bad request
-   *        content:
-   *          application/json:
-   *            schema:
-   *              $ref: '#/components/schemas/BadRequest' 
-   */
-  app.put("/api/users/state", validate(changeStateSchema), changeState);
 
   /**
    * @openapi
