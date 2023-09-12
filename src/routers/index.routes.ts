@@ -25,7 +25,7 @@ export default function(app: Express): Router {
    *      - name
    *      - last_name
    *      - phone
-   *      - role
+   *      - roleName
    *    properties:
    *      username:
    *        type: string
@@ -63,9 +63,9 @@ export default function(app: Express): Router {
    *       type: string
    *       description: The phone for the user
    *       required: true
-   *      role:
+   *      roleName:
    *        type: string
-   *        description: The role for the user
+   *        description: The role name for the user
    *        required: true
    *    example:  
    *       username: johndoe
@@ -77,7 +77,7 @@ export default function(app: Express): Router {
    *       name: John
    *       last_name: Doe
    *       phone: '1234567890'
-   *       role: admin
+   *       roleName: admin
    *   BadRequest:
    *    type: object
    *    required:
@@ -108,18 +108,14 @@ export default function(app: Express): Router {
    *            type: boolean
    *          email:
    *            type: string
-   *          personId:
-   *            type: string
-   *      - roles:
-   *        type: array    
+   *          person:
+   *            type: object
+   *      - role:
+   *          type: string  
    *    example:
    *      isAuthorized: true
-   *      user: jhondoe 
-   *      password: string
-   *      isActive: true
-   *      email: jhon.doe@example.com
-   *      personId: string
-   *      roles: ['admin']
+   *      user: { id: string, username: string, isActive: true, email: string, person: { id: string, id_document: string, type_document: string, name: string, last_name: string, phone: string}} 
+   *      role: admin
    *   ForgetPasswordInput:
    *    type: object
    *    required:
@@ -178,21 +174,22 @@ export default function(app: Express): Router {
    *      - isActive
    *      - email 
    *      - person
+   *      - role
    *    example:
    *      id: string
    *      username: jhondoe
    *      isActive: true
    *      email: string
    *      person: { id: string, id_document: string, type_document: string, name: string, last_name: string, phone: string}
-   *      roles_user: [{ name: admin }]
+   *      role: admin
+   * 
    *   UpdatePerson:
    *    type: object
    *    required:
    *      - username
    *      - isActive
    *      - email
-   *      - roleName
-   *      - personId    
+   *      - roleName    
    *      - id_document
    *      - type_document
    *      - name
@@ -203,7 +200,6 @@ export default function(app: Express): Router {
    *      isActive: true
    *      email: string
    *      roleName: string
-   *      personId: string
    *      id_document: string
    *      type_document: string
    *      name: string
@@ -240,14 +236,14 @@ export default function(app: Express): Router {
    *    required:
    *     - updatedUser
    *     - updatedPerson
-   *     - listOfRoles
+   *     - role
    *    properties:
    *      updatedUser:
    *        $ref: '#components/schemas/UserResponse'
    *      updatedPerson:
    *        $ref: '#components/schemas/PersonResponse'
-   *      listOfRoles:
-   *        $ref: '#components/schemas/RolesResponse'
+   *      role:
+   *        type: string
    *   CreatePerson:
    *    type: object
    *    required:

@@ -32,7 +32,7 @@ export default (app: Express): void => {
    */
     app.get("/api/brand", getBrands);
 
-     /**
+  /**
    * @openapi
    * /api/brand:
    *  post:
@@ -165,7 +165,7 @@ export default (app: Express): void => {
     app.get("/api/brand/:id", getBrandInfoById);
 
 
-     /**
+  /**
    * @openapi
    * /api/brand/{id}:
    *  delete:
