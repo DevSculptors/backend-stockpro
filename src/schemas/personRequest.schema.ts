@@ -1,44 +1,24 @@
 import { boolean, z } from "zod";
 
 import { object, string, TypeOf } from "zod";
-import { emailRegex } from "./auth.schema";
+export const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
 
 export const createPersonSchema = object({
     body: object({
-        id_document: string({
-            required_error: "id_document is required",
-        }).min(8),
-        type_document: z.enum(['CC', 'CE', 'TI', 'NIT', 'PP'], {
-            required_error: "type_document is required",
+        id_document: string().min(8, {
+            message: "El número de documento debe tener al menos 8 caracteres"
         }),
-        name: string({
-            required_error: "name is required",
+        type_document: z.enum(['CC', 'CE', 'TI', 'NIT', 'PP']),
+        name: string().min(1, {
+            message: "Es necesario ingresar el nombre"
         }),
-        last_name: string({
-            required_error: "last_name is required",
+        last_name: string().min(1, {
+            message: "Es necesario ingresar el apellido"
         }),
-        phone: string({
-            required_error: "phone is required",
-        }).min(10),
-    }),
-});
-
-export const updatePersonSchema = object({
-    body: object({
-        id_document: string({
-            required_error: "id_document is required",
-        }).min(8),
-        type_document: z.enum(['CC', 'CE', 'TI', 'NIT', 'PP'], {
-            required_error: "type_document is required",
+        phone: string().min(10, {
+            message: "El número telefónico debe tener 10 caracteres"
+        }).max(10, {
+            message: "El número telefónico debe tener 10 caracteres"
         }),
-        name: string({
-            required_error: "name is required",
-        }),
-        last_name: string({
-            required_error: "last_name is required",
-        }),
-        phone: string({
-            required_error: "phone is required",
-        }).min(10),
     }),
 });

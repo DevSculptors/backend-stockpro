@@ -3,8 +3,6 @@ import { CreatePerson, Person, UpdatePerson } from "../interfaces/Person";
 
 import { getPersons , createPerson, updatePersonById, getPersonById, getClients, deletePersonById} from "../services/person.services";
 import { decodeToken, formatErrorMessage, validateRole, validateSchema, validateUUID } from "../helpers/Utils";
-import { Message } from "../helpers/Errors";
-import { personSchema } from "../schemas/person.schema";
 
 export const getPersonsController = async (
   req: Request,

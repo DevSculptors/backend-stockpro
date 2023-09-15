@@ -4,21 +4,21 @@ import { object, string, TypeOf } from "zod";
 
 export const createBrandSchema = object({
     body: object({
-        name: string({
-            required_error: "Name is required",
+        name: string().min(1, {
+            message: "Es necesario ingresar el nombre"
         }),
-        is_active: boolean({
-            required_error: "is_active is required",
-        }),
-        description: string({
-            required_error: "description is required",
-        }),
+        is_active: boolean(),
+        description: string(),
     }),
 });
 
 export const changeStateBrandSchema = object({
     body: object({
-        id: string({ required_error: "Id is required"}),
-        is_active: boolean({ required_error: "is_active is required"}),
+        id: string().min(32, {
+            message: "El id es inválido"
+        }).max(32, {
+            message: "El id es inválido"
+        }),
+        is_active: boolean(),
     }),
 });

@@ -6,6 +6,7 @@ import personRoutes from "./person.routes";
 import authRoutes from "./auth.routes";
 import brandRoutes from "./brand.routes";
 import categoryRoutes from "./category.routes";
+import productRoutes from "./product.routes";
 
 const router = Router();
 export default function(app: Express): Router {
@@ -332,11 +333,36 @@ export default function(app: Express): Router {
    *    example:
    *      id: string
    *      is_active: false
+   *   Product:
+   *    type: object
+   *    required:
+   *      - id
+   *      - name_product
+   *      - description
+   *      - measure_unit
+   *      - stock
+   *      - id_category   
+   *      - id_brand
+   *      - sale_price_cast
+   *    example:
+   *      id: string
+   *      name_product: string
+   *      description: string
+   *      measure_unit: string 
+   *      stock: 14
+   *      id_category: string
+   *      id_brand: string
+   *      sale_price_cast: 5500
+   *   GetAllProductsResponse:
+   *    type: array
+   *    items:
+   *      $ref: '#components/schemas/Product'
    */
   authRoutes(app);
   userRoutes(app);
   personRoutes(app);
   brandRoutes(app);
   categoryRoutes(app);
+  productRoutes(app);
   return router;
 };
