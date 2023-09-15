@@ -1,7 +1,7 @@
 import { boolean, z } from "zod";
 
 import { object, string, TypeOf } from "zod";
-import { emailRegex } from "./auth.schema";
+import { emailRegex } from "./personRequest.schema";
 
 /**
  * @openapi
@@ -47,8 +47,8 @@ import { emailRegex } from "./auth.schema";
  */
 export const loginSchema = z.object({
   body: object({
-    email: string({
-      required_error: "Email is required",
+    email: string().regex(emailRegex,{
+      message: "El email no es válido"
     }),
     password: string(),
   }),
@@ -58,89 +58,88 @@ export const loginSchema = z.object({
 
 export const createUser = object({
   body: object({
-    username: string({
-      required_error: "Username is required",
-    }).min(5).max(255),
-    password: string({
-      required_error: "Password is required",
-    }).min(6).max(255),
-    isActive: boolean({
-      required_error: "isActive is required",
+    username: string().min(5,{
+      message: "El usuario debe tener mínimo 5 caracteres"
+    }).max(255),
+    password: string().min(6, {
+      message: "La contraseña debe tener mínimo 6 caracteres"
+    }).max(255),
+    isActive: boolean(),
+    email: string().regex(emailRegex,{
+      message: "El email no es válido"
     }),
-    email: string({
-      required_error: "Email is required",
-    }).regex(emailRegex),
-    id_document: string({
-      required_error: "id_document is required",
-    }).min(8),
-    type_document: z.enum(['CC', 'CE', 'TI', 'NIT', 'PP'], {
-      required_error: "type_document is required",
-    }
-    ),
-    name: string({
-      required_error: "name is required",
+    id_document: string().min(8,{
+      message: "El número de documento debe tener al menos 8 caracteres"
+    }).max(10, {
+      message: "El documento debe tener máximo 11 caracteres"
     }),
-    last_name: string({
-      required_error: "last_name is required",
-    }),
-    phone: string({
-      required_error: "phone is required",
-    }).min(10),  
-  }),
+    type_document: z.enum(['CC', 'CE', 'TI', 'NIT', 'PP']),
+    name: string().min(1, {message: "Es necesario ingresar el nombre"}),
+    last_name: string().min(1, {message: "Es necesario ingresar el apellido"}),
+    phone: string().min(10, {
+      message: "El número telefónico debe tener 10 caracteres"
+    }).max(10, {
+      message: "El número telefónico debe tener 10 caracteres"
+    }),  
+  })
 })
 
 export const forgetPasswordSchema = object({
   body: object({
-    email: string({
-      required_error: "Email is required"
-    }).regex(emailRegex)
+    email: string().regex(emailRegex,{
+      message: "El email no es válido"
+    })
   }),
 });
 
 export const changePasswordSchema = object({
   body: object({
-    newPassword: string({
-      required_error: "newPassword is required"
-    }).min(6).max(255),
-    confirmPassword: string({
-      required_error: "confirmPassword is required"
-    }).min(6).max(255)
+    newPassword: string().min(6,{
+      message: "La contraseña debe tener mínimo 6 caracteres"
+    }).max(255, {
+      message: "La contraseña debe tener máximo 255 caracteres"
+    }),
+    confirmPassword: string().min(6, {
+      message: "La contraseña debe tener mínimo 6 caracteres"
+    }).max(255, {
+      message: "La contraseña debe tener máximo 255 caracteres"
+    })
   }),
 });
 
 export const updateUserSchema = object({
   body: object({
-    username: string({
-      required_error: "username is required"
+    username: string().min(5, {
+      message: "El usuario debe tener mínimo 5 caracteres"
     }),
-    isActive: boolean({
-      required_error: "isActive is required"
+    isActive: boolean(),
+    email: string().regex(emailRegex, {
+      message: "El email no es válido"
     }),
-    email: string({
-      required_error: "email is required"
-    }).regex(emailRegex),
-    personId: string({
-      required_error: "personId is required"
+    personId: string(),
+    id_document: string().min(8, {
+      message: "El número de documento debe tener al menos 8 caracteres"
+    }), 
+    type_document: z.enum(['CC', 'CE', 'TI', 'NIT', 'PP']),
+    name: string().min(1, {message: "Es necesario ingresar el nombre"}),
+    last_name: string().min(1, {message: "Es necesario ingresar el apellido"}),
+    phone: string().min(10, {
+      message: "El número telefónico debe tener 10 caracteres"
+    }).max(10, {
+        message: "El número telefónico debe tener 10 caracteres"
     }),
-    id_document: string({
-      required_error: "id_document is required"
-    }),
-    type_document: z.enum(['CC', 'CE', 'TI', 'NIT', 'PP'], {required_error: "type_document is required"}),
-    name: string({required_error: "name is required"}),
-    last_name: string({required_error: "last_name is required"}),
-    phone: string({required_error:"phone is required"}).min(10),
-    roleName: string({required_error: "roleName is required"}), 
+    roleName: string(), 
   }),
 });
 
 export const changeStateSchema = object({
   body: object({
-    id: string({
-      required_error: "id is required"
-    }).min(36).max(36),
-    isActive: boolean({
-      required_error: "isActive is required"
-    })
+    id: string().min(36,{
+      message: "El id no es invalido"
+    }).max(36, {
+      message: "El id no es invalido"
+    }),
+    isActive: boolean()
   }),
 });
 

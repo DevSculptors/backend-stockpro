@@ -6,6 +6,7 @@ import { Message } from "./Errors";
 import { RoleName } from "../interfaces/Role";
 import { verifyToken } from "./Token";
 import  isUUID from 'uuid-validate';
+import { Product } from "interfaces/Product";
 
 
 const ROLE_ADMIN = 'admin';
@@ -50,4 +51,9 @@ export const decodeToken = async (req: Request): Promise<RoleName[]> =>{
 
 export const validateUUID = (uuid: string) => {
   return isUUID(uuid);
+}
+
+export const castProductSalePrice = (product: Product) =>{
+  product.sale_price_cast = Number(product.sale_price);
+  delete product.sale_price;
 }
