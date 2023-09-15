@@ -10,7 +10,7 @@ import {
 } from "../controllers/person.controller";
 import { authRequired } from "../middlewares/ValidateToken";
 import validate from "../middlewares/ValidateSchema";
-import { createPersonSchema, updatePersonSchema } from "../schemas/personRequest.schema";
+import { createPersonSchema } from "../schemas/personRequest.schema";
 
 export default (app: Express): void => {
    /**
@@ -105,7 +105,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-  app.put("/api/person/:id", authRequired, validate(updatePersonSchema), updatePerson);
+  app.put("/api/person/:id", authRequired, validate(createPersonSchema), updatePerson);
 
   /**
    * @openapi

@@ -1,5 +1,3 @@
-import { Measure } from "@prisma/client";
-
 export interface Product{
   id: string;
   name_product: string;
@@ -7,4 +5,5 @@ export interface Product{
   measure_unit: any;
   sale_price: number;
   stock: number;
+  sale_price_cast?: number;
 }
