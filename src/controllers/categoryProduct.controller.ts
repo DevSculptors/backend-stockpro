@@ -1,12 +1,14 @@
 import { Request, Response } from "express";
 import { changeSateCategoryById, createNewCategoryProduct, deleteCategoryById, getAllCategoryProducts, getCategoryById, getCategoryByName, updateCategoryById } from "../services/categoryProduct.services";
 import { CategoryProduct, createCategoryProduct, updateCategoryProduct } from "../interfaces/CategoryProduct";
-import { validateUUID } from "../helpers/Utils";
+import { calculateSkip, validateUUID } from "../helpers/Utils";
 
 
 export const getAllCategories = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const categoryProducts: CategoryProduct[] = await getAllCategoryProducts();
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const categoryProducts: CategoryProduct[] = await getAllCategoryProducts(calculateSkip(page, limit), limit);
         return res.status(200).json(categoryProducts);
     } catch (error) {
         console.log(error);

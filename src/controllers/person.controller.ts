@@ -2,14 +2,16 @@ import { Request, Response } from "express";
 import { CreatePerson, Person, UpdatePerson } from "../interfaces/Person"; 
 
 import { getPersons , createPerson, updatePersonById, getPersonById, getClients, deletePersonById} from "../services/person.services";
-import { decodeToken, formatErrorMessage, validateRole, validateSchema, validateUUID } from "../helpers/Utils";
+import { calculateSkip, decodeToken, formatErrorMessage, validateRole, validateSchema, validateUUID } from "../helpers/Utils";
 
 export const getPersonsController = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
   try {
-    const persons: Person[] = await getPersons();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const persons: Person[] = await getPersons(calculateSkip(page, limit), limit);
     return res.status(200).json(persons);
   } catch (err) {
     console.log(err.message);

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { EncryptPassword, simplifyRoles, validateUUID } from "../helpers/Utils";
+import { EncryptPassword, calculateSkip, simplifyRoles, validateUUID } from "../helpers/Utils";
 import { RolesUser, UpdateUser, User, UserWithPersonData } from "../interfaces/User";
 import { changeStateOfUser, createNewRole, deleteUserById, getRoleById, getRoleByName, getRoleFromUser, getUserById, getUsers, updateUser } from "../services/user.services";
 import { IRoleName, createdRole, createdRoleUser } from "../interfaces/Role";
@@ -9,7 +9,9 @@ import { updatePersonById } from "../services/person.services";
 
 export const getAllUsers = async (req: Request, res: Response): Promise<Response> =>{
     try {
-        const users: any[] = await getUsers();
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const users: any[] = await getUsers(calculateSkip(page, limit), limit);
         users.forEach(user => {
             user.role = user.role?.name;
         });

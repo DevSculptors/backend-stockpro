@@ -22,6 +22,17 @@ export default (app: Express): void => {
    *     summary: Get All persons
    *     security: 
    *      - bearerAuth: []
+   *     parameters:
+   *      - in: query
+   *        name: page
+   *        schema:
+   *         type: integer
+   *        description: page number
+   *      - in: query
+   *        name: limit
+   *        schema:
+   *          type: integer  
+   *        description: limit of persons per page
    *     responses:
    *       200:
    *        description: success

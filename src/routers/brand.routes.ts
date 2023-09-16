@@ -16,6 +16,17 @@ export default (app: Express): void => {
    *     summary: Get All brands
    *     security: 
    *      - bearerAuth: []
+   *     parameters:
+   *      - in: query
+   *        name: page
+   *        schema:
+   *          type: integer
+   *        description: page number (starts in 1)
+   *      - in: query
+   *        name: limit
+   *        schema:
+   *          type: integer
+   *        description: limit of brands per page 
    *     responses:
    *       200:
    *        description: success
