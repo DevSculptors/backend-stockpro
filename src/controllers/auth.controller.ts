@@ -56,8 +56,7 @@ export const register = async (
       isActive,
       email,
       personId: person.id,
-      id_role: role.id,
-      roleUser: role.name
+      id_role: role.id
     };
     newUser.password = passwordHash;
     const userSaved: User = await createUser(newUser);
@@ -92,9 +91,9 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     if (!isMatch) {
       return res.status(400).json({ message: "The password is invalid" });
     }
-
     const role: IRoleName = await getRoleFromUser(userFound.id);
     const userRole = role?.role.name;
+    userFound.roleUser = userRole;
     const token = await GenerateToken({
       userId: userFound.id.toString(),
       role: userRole,
