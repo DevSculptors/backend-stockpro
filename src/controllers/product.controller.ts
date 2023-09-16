@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 import { getProductById, getProducts } from "../services/product.services";
-import { Product } from "../interfaces/Product";
+import { Product, ProductWithData } from "../interfaces/Product";
 import { castProductSalePrice, validateUUID } from "../helpers/Utils";
 
 
 export const getAllProducts = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const products: Product[] = await getProducts();
+        const products: ProductWithData[] = await getProducts();
         products.forEach((product: Product) => {
             castProductSalePrice(product)
         });    
