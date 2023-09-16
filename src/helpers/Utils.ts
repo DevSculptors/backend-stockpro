@@ -54,6 +54,5 @@ export const validateUUID = (uuid: string) => {
 }
 
 export const castProductSalePrice = (product: Product) =>{
-  product.sale_price_cast = Number(product.sale_price);
-  delete product.sale_price;
+  product.sale_price = Number(product.sale_price);
 }
