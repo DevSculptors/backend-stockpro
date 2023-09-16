@@ -1,7 +1,7 @@
 import { Product, ProductWithData } from "../interfaces/Product";
 import { prisma } from "../helpers/Prisma";
 
-export const getProducts = async (): Promise<ProductWithData[]> => {
+export const getProducts = async (skip: number, limit: number): Promise<ProductWithData[]> => {
     const products: ProductWithData[] = await prisma.product.findMany({
         select: {
             id: true,
@@ -26,6 +26,11 @@ export const getProducts = async (): Promise<ProductWithData[]> => {
                     description: true
                 }
             }
+        },
+        skip: skip,
+        take: limit,
+        orderBy: {
+            name_product: "asc"
         }
     });
     return products;

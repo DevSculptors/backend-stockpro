@@ -14,6 +14,17 @@ export default (app: Express): void => {
    *     summary: Get All categories
    *     security: 
    *      - bearerAuth: []
+   *     parameters:
+   *      - in: query
+   *        name: page
+   *        schema:
+   *          type: integer
+   *        description: page number (starts in 1)
+   *      - in: query
+   *        name: limit
+   *        schema:
+   *          type: integer
+   *        description: limit of categories per page 
    *     responses:
    *       200:
    *        description: success

@@ -2,8 +2,14 @@ import { GetPersonsId } from "../interfaces/User";
 import {prisma } from "../helpers/Prisma";
 import { CreatePerson,UpdatePerson, Person } from "../interfaces/Person";
 
-export const getPersons = async (): Promise<Person[]> => {
-  const persons: Person[] = await prisma.person.findMany();
+export const getPersons = async (skip: number, limit: number): Promise<Person[]> => {
+  const persons: Person[] = await prisma.person.findMany({
+    skip: skip,
+    take: limit,
+    orderBy: {
+      name: "asc"
+    }
+  });
   return persons;
 }
 

@@ -1,8 +1,14 @@
 import { BrandProduct, CreateBrandProduct, UpdateBrandProduct } from "../interfaces/BrandProduct";
 import {prisma } from "../helpers/Prisma";
 
-export const getAllBrands = async (): Promise<BrandProduct[]> => {
-    const brands: BrandProduct[] = await prisma.brand_product.findMany({});
+export const getAllBrands = async (skip: number, take: number): Promise<BrandProduct[]> => {
+    const brands: BrandProduct[] = await prisma.brand_product.findMany({
+        skip: skip,
+        take: take,
+        orderBy: {
+            name: "asc"
+        }
+    });
     return brands;
 }
 

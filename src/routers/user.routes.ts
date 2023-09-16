@@ -14,6 +14,17 @@ export default (app: Express): void => {
    *     summary: get all users in an array
    *     security: 
    *      - bearerAuth: []
+   *     parameters:
+   *      - in: query
+   *        name: page
+   *        schema:
+   *          type: integer
+   *        description: page number (starts in 1)
+   *      - in: query
+   *        name: limit
+   *        schema:
+   *          type: integer
+   *        description: limit of users per page (default 10)
    *     responses:
    *       200:
    *        description: success

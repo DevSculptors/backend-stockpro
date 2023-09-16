@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { BrandProduct, CreateBrandProduct, UpdateBrandProduct } from "../interfaces/BrandProduct";
 import { changeStateOfBrand, createNewBrand, deleteBrand, getAllBrands, getBrandById, getBrandByName, updateBrand } from "../services/brand.services";
-import { validateUUID } from "../helpers/Utils";
+import { calculateSkip, validateUUID } from "../helpers/Utils";
 
 export const createBrand = async (req: Request, res: Response): Promise<Response> => {
     try {
@@ -39,7 +39,9 @@ export const editBrand = async (req: Request, res: Response): Promise<Response> 
 
 export const getBrands = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const brands: BrandProduct[] = await getAllBrands();   
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const brands: BrandProduct[] = await getAllBrands(calculateSkip(page, limit), limit);   
         return res.status(200).json(brands);
     } catch (error) {
         console.log(error.message);
