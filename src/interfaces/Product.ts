@@ -1,9 +1,26 @@
+import { BrandProduct } from "./BrandProduct";
+import { CategoryProduct } from "./CategoryProduct";
+
 export interface Product{
   id: string;
   name_product: string;
   description: string;
   measure_unit: any;
-  sale_price: number;
+  sale_price: any;
   stock: number;
-  sale_price_cast?: number;
+}
+
+export interface ProductWithData extends Product {
+  brand: {
+    id: string;
+    name: string;
+    is_active: boolean;
+    description: string;
+  };
+  category: {
+    id: string;
+    name: string;
+    is_active: boolean;
+    description: string;
+  };
 }

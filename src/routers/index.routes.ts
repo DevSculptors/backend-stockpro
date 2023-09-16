@@ -341,9 +341,9 @@ export default function(app: Express): Router {
    *      - description
    *      - measure_unit
    *      - stock
-   *      - id_category   
-   *      - id_brand
-   *      - sale_price_cast
+   *      - sale_price
+   *      - brand
+   *      - category
    *    example:
    *      id: string
    *      name_product: string
@@ -352,7 +352,9 @@ export default function(app: Express): Router {
    *      stock: 14
    *      id_category: string
    *      id_brand: string
-   *      sale_price_cast: 5500
+   *      sale_price: 5500
+   *      brand: { id: string, name: string, is_active: true, description: string }
+   *      category: { id: string, name: string, is_active: true, description: string }
    *   GetAllProductsResponse:
    *    type: array
    *    items:

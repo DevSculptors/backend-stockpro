@@ -56,7 +56,8 @@ export const register = async (
       isActive,
       email,
       personId: person.id,
-      id_role: role.id
+      id_role: role.id,
+      roleUser: role.name
     };
     newUser.password = passwordHash;
     const userSaved: User = await createUser(newUser);
@@ -100,7 +101,6 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
     } as GenerateTokenPayload);
 
     res.header("Authorization", `Bearer ${token}`);
-    delete userFound.id_role;
     return res.status(200).json({userFound, token: token});
   } catch (err) {
     console.log(err);
@@ -147,7 +147,6 @@ export const verifyToken = async (
         return res.status(400).json({ message: "The user does not exists" });
       }
       const role = userFind.role.name;
-      delete userFind.role;
       return res
         .status(200)
         .json({ isAuthorizaded: true, user: userFind, role: role });
