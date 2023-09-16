@@ -127,13 +127,24 @@ export default (app: Express): void => {
    *     summary: Get all Clients
    *     security: 
    *      - bearerAuth: []
+   *     parameters:
+   *      - in: query
+   *        name: page
+   *        schema:
+   *          type: integer
+   *        description: page number (start from 1)
+   *      - in: query
+   *        name: limit
+   *        schema:
+   *          type: integer
+   *        description: limit of clients per page (default 10) 
    *     responses:
    *       200:
    *        description: success
    *        content:
    *          application/json:
    *            schema:
-  *               $ref: '#/components/schemas/GetAllPersonsResponse'
+   *              $ref: '#/components/schemas/GetAllPersonsResponse'
    *       400:
    *        description: Bad request
    *        content:

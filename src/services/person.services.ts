@@ -37,17 +37,22 @@ export const updatePersonById= async (id: string, personData: UpdatePerson): Pro
   return updatedPerson;
 }
 
-export const getClients = async (): Promise<Person[]> => {
+export const getClients = async (skip: number, limit: number): Promise<Person[]> => {
   const usersId: GetPersonsId[] = await prisma.user.findMany({
     select: {
       personId: true
-    }
+    },
   });
   const clients: Person[] = await prisma.person.findMany({
     where: {
       id: {
         notIn: usersId.map((user) => user.personId)
       }
+    },
+    skip: skip,
+    take: limit,
+    orderBy: {
+      name: "asc"
     }
   });
   return clients;
