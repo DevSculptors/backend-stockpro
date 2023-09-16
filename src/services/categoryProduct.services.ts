@@ -1,8 +1,14 @@
 import { CategoryProduct, createCategoryProduct, updateCategoryProduct } from "../interfaces/CategoryProduct";
 import {prisma } from "../helpers/Prisma";
 
-export const getAllCategoryProducts = async (): Promise<CategoryProduct[]> => {
-    const categoryProducts: CategoryProduct[] = await prisma.category_Product.findMany({});
+export const getAllCategoryProducts = async (skip: number, limit: number): Promise<CategoryProduct[]> => {
+    const categoryProducts: CategoryProduct[] = await prisma.category_Product.findMany({
+        skip: skip,
+        take: limit,
+        orderBy: {
+            name: "asc"
+        }
+    });
     return categoryProducts;
 }
 

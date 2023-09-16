@@ -4,7 +4,7 @@ import { prisma } from "../helpers/Prisma";
 
 
 
-export const getUsers = async (): Promise<UserWithPersonData[]> => {
+export const getUsers = async (skip: number, limit: number): Promise<UserWithPersonData[]> => {
   const users: UserWithPersonData[] = await prisma.user.findMany({
     select: {
       id: true,
@@ -19,6 +19,11 @@ export const getUsers = async (): Promise<UserWithPersonData[]> => {
           name: true
         }
       }
+    },
+    skip: skip,
+    take: limit,
+    orderBy: {
+      username: "asc"
     }
   });
   return users;

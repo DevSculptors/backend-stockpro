@@ -56,3 +56,8 @@ export const validateUUID = (uuid: string) => {
 export const castProductSalePrice = (product: Product) =>{
   product.sale_price = Number(product.sale_price);
 }
+
+export const calculateSkip = (page: number, limit: number) =>{
+  const skip = (page-1)*limit;
+  return skip < 0 ? 0 : skip;
+}
