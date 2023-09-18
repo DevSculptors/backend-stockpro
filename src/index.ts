@@ -14,9 +14,11 @@ const app = express();
 
 dotenv.config();
 
+const allowedOrigins = [process.env.FRONTEND_DEPLOY_URL, process.env.FRONTEND_URL];
+
 app.use(
   cors({
-    origin: ['https://frontend-stockpro-4susgg47z-stockpro.vercel.app', process.env.FRONTEND_URL],
+    origin: allowedOrigins,
     credentials: true,
   })
 );
