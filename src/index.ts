@@ -16,7 +16,7 @@ dotenv.config();
 
 app.use(
   cors({
-    origin: true,
+    origin: 'https://frontend-stockpro-4susgg47z-stockpro.vercel.app/',
     credentials: true,
   })
 );
