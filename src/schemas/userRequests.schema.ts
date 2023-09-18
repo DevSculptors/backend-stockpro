@@ -116,7 +116,6 @@ export const updateUserSchema = object({
     email: string().regex(emailRegex, {
       message: "El email no es válido"
     }),
-    personId: string(),
     id_document: string().min(8, {
       message: "El número de documento debe tener al menos 8 caracteres"
     }), 
