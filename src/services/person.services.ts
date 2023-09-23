@@ -29,6 +29,22 @@ export const getPersonById = async (id: string): Promise<Person | null> => {
   return person;
 }
 
+export const getPersonByDocAndPhone = async (id_document: string, phone: string): Promise<Person[] | null> => {
+  const persons: Person[] | null = await prisma.person.findMany({
+    where: {
+      OR: [
+        {
+          id_document: id_document
+        },
+        {
+          phone: phone
+        }
+      ]
+    }
+  });
+  return persons.length > 0 ? persons : null;
+}
+
 export const updatePersonById= async (id: string, personData: UpdatePerson): Promise<UpdatePerson | null> =>{
   const updatedPerson: UpdatePerson = await prisma.person.update({
     where: { id:id },

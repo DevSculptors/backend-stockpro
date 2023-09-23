@@ -14,9 +14,9 @@ export const createBrandSchema = object({
 
 export const changeStateBrandSchema = object({
     body: object({
-        id: string().min(32, {
+        id: string().min(36, {
             message: "El id es inválido"
-        }).max(32, {
+        }).max(36, {
             message: "El id es inválido"
         }),
         is_active: boolean(),
