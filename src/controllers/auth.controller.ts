@@ -23,7 +23,7 @@ import {
 import jwt from "jsonwebtoken";
 import { Resend } from "resend";
 import { CreatePerson } from "../interfaces/Person";
-import { createPerson } from "../services/person.services";
+import { createPerson, getPersonByDocAndPhone } from "../services/person.services";
 import { IRoleName } from "../interfaces/Role";
 
 export const register = async (
@@ -34,11 +34,12 @@ export const register = async (
     const { username, password, isActive, email, id_document, type_document, name, last_name, phone, roleName} = req.body;
     const usernameFound: User = await getUserByUsername(username);
     const userEmailFound: User = await getUserByEmail(email);
+    const personFound = await getPersonByDocAndPhone(id_document, phone);
     const role = await getRoleByName(roleName);
-    if (usernameFound || userEmailFound) {
+    if (usernameFound || userEmailFound || personFound) {
       return res
         .status(400)
-        .json({ message: "The username or email already exists" });
+        .json({ message: "The username, email, id_document or phone already exists" });
     }
     const passwordHash = await EncryptPassword(password);
     const newPerson: CreatePerson = {

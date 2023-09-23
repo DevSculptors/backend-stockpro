@@ -1,4 +1,4 @@
-import { Product, ProductWithData } from "../interfaces/Product";
+import { Product, ProductWithData, createdProduct, updatedProduct } from "../interfaces/Product";
 import { prisma } from "../helpers/Prisma";
 
 export const getProducts = async (skip: number, limit: number): Promise<ProductWithData[]> => {
@@ -10,6 +10,7 @@ export const getProducts = async (skip: number, limit: number): Promise<ProductW
             measure_unit: true,
             sale_price: true,
             stock: true,
+            is_active: true,
             brand: {
                 select: {
                     id: true,
@@ -67,5 +68,77 @@ export const getProductById = async (id: string): Promise<Product> => {
         }
     });
     return product;
+}
+
+export const createProduct = async (product: createdProduct): Promise<Product> => {
+    const newProduct: Product = await prisma.product.create({
+        data: {
+            name_product: product.name_product,
+            description: product.description,
+            measure_unit: product.measure_unit,
+            sale_price: product.sale_price,
+            stock: product.stock,
+            is_active: product.is_active,
+            brand: {
+                connect: {
+                    id: product.brand_id
+                }
+            },
+            category: {
+                connect: {
+                    id: product.category_id
+                }
+            }
+        }
+    });
+    return newProduct;
+}
+
+export const updateProduct = async (id: string, product: updatedProduct): Promise<Product> => {
+    const updatedProduct: Product = await prisma.product.update({
+        where: {
+            id: id
+        },
+        data: {
+            name_product: product.name_product,
+            description: product.description,
+            measure_unit: product.measure_unit,
+            sale_price: product.sale_price,
+            stock: product.stock,
+            is_active: product.is_active,
+            brand: {
+                connect: {
+                    id: product.brand_id
+                }
+            },
+            category: {
+                connect: {
+                    id: product.category_id
+                }
+            }
+        }
+    });
+    return updatedProduct;
+}
+
+export const changeStateInProduct = async (id: string, state: boolean): Promise<Product> => {
+    const updatedProduct: Product = await prisma.product.update({
+        where: {
+            id: id
+        },
+        data: {
+            is_active: state
+        }
+    });
+    return updatedProduct;
+}
+
+export const deleteProduct = async (id: string): Promise<Product> => {
+    const deletedProduct: Product = await prisma.product.delete({
+        where: {
+            id: id
+        }
+    });
+    return deletedProduct;
 }
 
