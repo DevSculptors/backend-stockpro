@@ -8,7 +8,18 @@ export interface Product{
   measure_unit: any;
   sale_price: any;
   stock: number;
+  is_active: boolean;
 }
+
+export type createdProduct = Omit<Product, "id"> &{
+  brand_id: string;
+  category_id: string;
+};
+
+export type updatedProduct = Partial<Product> &{
+  brand_id?: string;
+  category_id?: string;
+};
 
 export interface ProductWithData extends Product {
   brand: {
