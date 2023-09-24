@@ -9,6 +9,7 @@ import {
   User,
   GenerateTokenPayload,
   GenerateTokenForget,
+  UserWithPersonData,
 } from "../interfaces/User";
 import {
   getUserByUsername,
@@ -18,6 +19,7 @@ import {
   updateUser,
   getUserById,
   getRoleByName,
+  getUserInfoByEmail,
 } from "../services/user.services";
 
 import jwt from "jsonwebtoken";
@@ -25,6 +27,7 @@ import { Resend } from "resend";
 import { CreatePerson } from "../interfaces/Person";
 import { createPerson, getPersonByDocAndPhone } from "../services/person.services";
 import { IRoleName } from "../interfaces/Role";
+import { get } from "http";
 
 export const register = async (
   req: Request,
@@ -60,7 +63,7 @@ export const register = async (
       id_role: role.id
     };
     newUser.password = passwordHash;
-    const userSaved: User = await createUser(newUser);
+    const userSaved: UserWithPersonData = await createUser(newUser);
     userSaved.roleUser = role.name;
     const roleUser: IRoleName = await getRoleFromUser(userSaved.id);
     const token = await GenerateToken({
@@ -68,6 +71,7 @@ export const register = async (
       role: roleUser?.role.name,
     } as GenerateTokenPayload);
     res.header("Authorization", `Bearer ${token}`);
+    delete userSaved.role;
     return res.status(201).json({userSaved, token: token});
   } catch (err) {
     console.log(err.message);
@@ -81,7 +85,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
   try {
     const { email, password } = req.body;
 
-    const userFound: User = await getUserByEmail(email);
+    const userFound: UserWithPersonData = await getUserInfoByEmail(email);
     if (!userFound) {
       return res.status(400).json({ message: "The email does not exists" });
     }
@@ -99,7 +103,7 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
       userId: userFound.id.toString(),
       role: userRole,
     } as GenerateTokenPayload);
-
+    delete userFound.role, userFound.personId, userFound.password;
     res.header("Authorization", `Bearer ${token}`);
     return res.status(200).json({userFound, token: token});
   } catch (err) {

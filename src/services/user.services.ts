@@ -29,9 +29,19 @@ export const getUsers = async (skip: number, limit: number): Promise<UserWithPer
   return users;
 }
 
-export const createUser = async (user: CreateUser): Promise<User> => {
-  const newUser: User = await prisma.user.create({
-    data: user
+export const createUser = async (user: CreateUser): Promise<UserWithPersonData> => {
+  const newUser: UserWithPersonData = await prisma.user.create({
+    data: user,
+      select: {
+        id: true,
+        username: true,
+        password: false,
+        personId: true,
+        email: true,
+        isActive: true,
+        person: true,
+        role: true
+      }
   });
   return newUser;
 }
@@ -116,19 +126,31 @@ export const getUserByEmail = async (email:string): Promise<User | null> =>{
   return user;
 }
 
+export const getUserInfoByEmail = async (email:string): Promise<UserWithPersonData | null> =>{
+  const user: UserWithPersonData = await prisma.user.findFirst({
+    where: {
+      email: email
+    },
+    select: {
+      id: true,
+      username: true,
+      password: true,
+      personId: true,
+      email: true,
+      isActive: true,
+      person: true,
+      role: true,
+    }
+  });
+  return user;
+}
+
 export const changeStateOfUser = async (id: string, state: boolean): Promise<any> =>{
   const updatedUser = await prisma.user.update({
     where: {id: id},
     data: {isActive: state}
   });
   return updatedUser;
-}
-
-export const createNewRole = async (role: createdRole): Promise<createdRole> =>{
-  const newRole = await prisma.role.create({
-    data: role
-  });
-  return newRole;
 }
 
 export const deleteUserById = async (id: string): Promise<any> =>{

@@ -36,7 +36,7 @@ export interface RolesUser {
   }[]; 
 }
 
-export interface UserWithPersonData extends Omit<User, "personId" | "password" | "id_role"> {
+export interface UserWithPersonData extends Partial<User> {
   person: {
     id: string;
     id_document: string;
