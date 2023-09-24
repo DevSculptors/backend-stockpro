@@ -6,6 +6,7 @@ export interface Role{
 
 export type RoleName = Pick<Role, 'name'>;
 export type createdRole = Omit<Role, 'id'>;
+export type updatedRole = Partial<createdRole>;
 
 export interface IRoleName{
     role: RoleName
