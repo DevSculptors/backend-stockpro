@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { calculateSkip, validateUUID } from "../helpers/Utils";
 import { UpdateUser, User, UserWithPersonData } from "../interfaces/User";
-import { changeStateOfUser, createNewRole, deleteUserById, getRoleByName, getRoleFromUser, getUserByEmail, getUserById, getUsers, updateUser } from "../services/user.services";
+import { changeStateOfUser, deleteUserById, getRoleByName, getRoleFromUser, getUserByEmail, getUserById, getUsers, updateUser } from "../services/user.services";
 import { IRoleName, createdRole } from "../interfaces/Role";
 import { UpdatePerson } from "../interfaces/Person";
 import { getPersonByDocAndPhone, updatePersonById } from "../services/person.services";
@@ -74,20 +74,6 @@ export const updateUserFields = async (req: Request, res: Response): Promise<Res
     } catch (err) {
         console.log(err.message);
         return res.status(500).json({ message: err.message });
-    }
-}
-
-export const createRole =async (req:Request, res:Response): Promise<Response> => {
-    try {
-        const {name, description} = req.body;
-        const newRole: createdRole = {
-            name, description
-        }
-        const role = await createNewRole(newRole);
-        return res.status(200).json({role});
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({message: error.message});
     }
 }
 
