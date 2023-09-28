@@ -8,6 +8,7 @@ import brandRoutes from "./brand.routes";
 import categoryRoutes from "./category.routes";
 import productRoutes from "./product.routes";
 import roleRoutes from "./role.routes";
+import saleRoutes from "./sale.routes";
 
 const router = Router();
 export default function(app: Express): Router {
@@ -368,5 +369,6 @@ export default function(app: Express): Router {
   categoryRoutes(app);
   productRoutes(app);
   roleRoutes(app);
+  saleRoutes(app);
   return router;
 };

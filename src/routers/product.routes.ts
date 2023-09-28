@@ -3,6 +3,7 @@ import { changeStateProduct, createNewProduct, deleteOneProduct, getAllProducts,
 import validate from "../middlewares/ValidateSchema";
 import { createProductSchema } from "../schemas/productRequests.schema";
 import { changeStateBrandSchema } from "../schemas/brandRequests.schema";
+import { authRequired } from "../middlewares/ValidateToken";
 
 export default (app: Express): void => {
   /**
@@ -66,7 +67,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.get("/api/product", getAllProducts);
+    app.get("/api/product", authRequired, getAllProducts);
 
   /**
    * @openapi
@@ -98,7 +99,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.get("/api/product/:id", getProductInfoById);
+    app.get("/api/product/:id", authRequired, getProductInfoById);
 
   /**
    * @openapi
@@ -129,7 +130,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.post("/api/product", validate(createProductSchema), createNewProduct);
+    app.post("/api/product", authRequired, validate(createProductSchema), createNewProduct);
   
     /**
    * @openapi
@@ -160,7 +161,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.put("/api/product/state", validate(changeStateBrandSchema), changeStateProduct);
+    app.put("/api/product/state", authRequired, validate(changeStateBrandSchema), changeStateProduct);
 
   /**
    * @openapi
@@ -198,7 +199,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.put("/api/product/:id", validate(createProductSchema), updateOneProduct);
+    app.put("/api/product/:id", authRequired, validate(createProductSchema), updateOneProduct);
 
   /**
    * @openapi
@@ -226,5 +227,5 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.delete("/api/product/:id", deleteOneProduct);
+    app.delete("/api/product/:id", authRequired, deleteOneProduct);
 }

@@ -121,6 +121,31 @@ export const updateProduct = async (id: string, product: updatedProduct): Promis
     return updatedProduct;
 }
 
+export const getStockPriceProduct = async (id: string): Promise<updatedProduct> => {
+    const product: updatedProduct = await prisma.product.findUnique({
+        where: {
+            id: id
+        },
+        select: {
+            stock: true,
+            sale_price: true
+        }
+    });
+    return product;
+}
+
+export const updateStockProduct = async (id: string, newStock: number): Promise<Product> => {
+    const updatedProduct: Product = await prisma.product.update({
+        where: {
+            id: id
+        },
+        data: {
+            stock: newStock
+        }
+    });
+    return updatedProduct;
+}
+
 export const changeStateInProduct = async (id: string, state: boolean): Promise<Product> => {
     const updatedProduct: Product = await prisma.product.update({
         where: {
