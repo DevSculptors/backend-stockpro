@@ -124,7 +124,7 @@ export const createSale = async (data: CreateSale): Promise<SaleWithPersonData> 
             oders: {
                 create: data.products.map((product: any) => {
                     return {
-                        price: product.price,
+                        price: product.price*product.amount_product,
                         amount_product: product.amount_product,
                         product: {
                             connect: {
@@ -153,7 +153,7 @@ export const createSale = async (data: CreateSale): Promise<SaleWithPersonData> 
             oders: {
                 select: {
                     id: true,
-                    price: false,
+                    price: true,
                     amount_product: true,
                     product: {
                         select: {
