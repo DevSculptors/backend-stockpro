@@ -1,6 +1,9 @@
 import { Express } from "express";
 
 import { getAllRoles, getRoleInfoById, createRole, deleteRole, updateRole } from "../controllers/role.controller";
+import validate from "../middlewares/ValidateSchema";
+import { createRoleSchema } from "../schemas/role.schema";
+import { authRequired } from "../middlewares/ValidateToken";
 
 export default (app: Express): void => {
 
@@ -67,7 +70,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.get("/api/roles", getAllRoles);
+    app.get("/api/roles", authRequired, getAllRoles);
 
 /**
    * @openapi
@@ -98,7 +101,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.get("/api/roles/:id", getRoleInfoById);
+    app.get("/api/roles/:id", authRequired, getRoleInfoById);
 
     /**
    * @openapi
@@ -129,7 +132,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.post("/api/roles", createRole);
+    app.post("/api/roles", authRequired, validate(createRoleSchema), createRole);
 
     /**
    * @openapi
@@ -157,7 +160,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.delete("/api/roles/:id", deleteRole);
+    app.delete("/api/roles/:id", authRequired, deleteRole);
 
      /**
    * @openapi
@@ -195,5 +198,5 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.put("/api/roles/:id", updateRole);
+    app.put("/api/roles/:id", authRequired, validate(createRoleSchema), updateRole);
 }

@@ -2,6 +2,7 @@ import validate from "../middlewares/ValidateSchema";
 import { changeSate, createCategory, deleteCategory, getAllCategories, getCategory, updateCategory } from "../controllers/categoryProduct.controller";
 import { Express } from "express";
 import { changeStateBrandSchema, createBrandSchema } from "../schemas/brandRequests.schema";
+import { authRequired } from "../middlewares/ValidateToken";
 
 
 export default (app: Express): void => {
@@ -39,7 +40,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.get("/api/category", getAllCategories);
+    app.get("/api/category", authRequired, getAllCategories);
 
    /**
    * @openapi
@@ -70,7 +71,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.post("/api/category", validate(createBrandSchema),createCategory);
+    app.post("/api/category", authRequired, validate(createBrandSchema),createCategory);
 
     /**
    * @openapi
@@ -102,7 +103,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.get("/api/category/:id", getCategory);
+    app.get("/api/category/:id", authRequired, getCategory);
 
      /**
    * @openapi
@@ -133,7 +134,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-     app.put("/api/category/state", validate(changeStateBrandSchema), changeSate);
+     app.put("/api/category/state", authRequired, validate(changeStateBrandSchema), changeSate);
 
       /**
    * @openapi
@@ -171,7 +172,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.put("/api/category/:id", validate(createBrandSchema), updateCategory);
+    app.put("/api/category/:id", authRequired, validate(createBrandSchema), updateCategory);
 
       /**
    * @openapi
@@ -209,5 +210,5 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/NotFound' 
    */
-    app.delete("/api/category/:id", deleteCategory);
+    app.delete("/api/category/:id", authRequired, deleteCategory);
 }

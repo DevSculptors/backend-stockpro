@@ -39,7 +39,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-  app.get("/api/users", getAllUsers);
+  app.get("/api/users", authRequired, getAllUsers);
 
   /**
    * @openapi
@@ -70,7 +70,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-  app.put("/api/users/state", validate(changeStateSchema), changeState);
+  app.put("/api/users/state", authRequired, validate(changeStateSchema), changeState);
 
   /**
    * @openapi
@@ -108,7 +108,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-  app.put("/api/users/:id", validate(updateUserSchema), updateUserFields);
+  app.put("/api/users/:id", authRequired, validate(updateUserSchema), updateUserFields);
 
   /**
    * @openapi
@@ -140,7 +140,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-  app.get("/api/users/:id", authRequired ,getUserInfoById);
+  app.get("/api/users/:id", authRequired, getUserInfoById);
 
   /**
    * @openapi

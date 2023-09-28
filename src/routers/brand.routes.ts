@@ -3,6 +3,7 @@ import { Express } from "express";
 import { changeStateBrand, createBrand, deleteBrandById, editBrand, getBrandInfoById, getBrands } from "../controllers/brand.controller";
 import validate from "../middlewares/ValidateSchema";
 import { changeStateBrandSchema, createBrandSchema } from "../schemas/brandRequests.schema";
+import { authRequired } from "../middlewares/ValidateToken";
 
 
 export default (app: Express): void => {
@@ -41,7 +42,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.get("/api/brand", getBrands);
+    app.get("/api/brand", authRequired, getBrands);
 
   /**
    * @openapi
@@ -72,7 +73,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.post("/api/brand", validate(createBrandSchema), createBrand);
+    app.post("/api/brand", authRequired, validate(createBrandSchema), createBrand);
 
     /**
    * @openapi
@@ -103,7 +104,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.put("/api/brand/state", validate(changeStateBrandSchema), changeStateBrand);
+    app.put("/api/brand/state", authRequired ,validate(changeStateBrandSchema), changeStateBrand);
 
     /**
    * @openapi
@@ -141,7 +142,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.put("/api/brand/:id", validate(createBrandSchema), editBrand);
+    app.put("/api/brand/:id", authRequired, validate(createBrandSchema), editBrand);
 
     /**
    * @openapi
@@ -173,7 +174,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.get("/api/brand/:id", getBrandInfoById);
+    app.get("/api/brand/:id", authRequired, getBrandInfoById);
 
 
   /**
@@ -212,5 +213,5 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/NotFound' 
    */
-    app.delete("/api/brand/:id", deleteBrandById);
+    app.delete("/api/brand/:id", authRequired, deleteBrandById);
 }
