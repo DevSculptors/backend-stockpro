@@ -26,7 +26,7 @@ export default (app: Express): void => {
 *           price_sale: 1200 (precio total de la venta)
 *           person: {id: string, name: string, last_name: string, phone: string, email: string, id_document: string, type_document: string}
 *           user: {id: string, username: string, email: string, isActive: boolean, person: {id: string, name: string, last_name: string, phone: string, id_document: string, type_document: string}, roleUser: cashier}
-*           orders: [{id: string, amount_product: number, product: {id: string, name_product: string, description: string, measure_unit: KG, sale_price: number, stock: number, brand: {id: string, name: string}, category: {id: string, name: string}}}]
+*           orders: [{id: string, price: number (precio de la cantidad de unidades de un producto x precio individual), amount_product: number, product: {id: string, name_product: string, description: string, measure_unit: KG, sale_price: number, stock: number, brand: {id: string, name: string}, category: {id: string, name: string}}}]
 *    SalesResponse:
 *       type: array
 *       items:
