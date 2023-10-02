@@ -9,6 +9,7 @@ import categoryRoutes from "./category.routes";
 import productRoutes from "./product.routes";
 import roleRoutes from "./role.routes";
 import saleRoutes from "./sale.routes";
+import inventoryRoutes from "./inventory.routes";
 
 const router = Router();
 export default function(app: Express): Router {
@@ -370,5 +371,6 @@ export default function(app: Express): Router {
   productRoutes(app);
   roleRoutes(app);
   saleRoutes(app);
+  inventoryRoutes(app);
   return router;
 };

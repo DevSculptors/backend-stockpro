@@ -134,14 +134,12 @@ export const getStockPriceProduct = async (id: string): Promise<updatedProduct> 
     return product;
 }
 
-export const updateStockProduct = async (id: string, newStock: number): Promise<Product> => {
+export const modifyProduct = async (id: string, product: updatedProduct): Promise<Product> => {
     const updatedProduct: Product = await prisma.product.update({
         where: {
             id: id
         },
-        data: {
-            stock: newStock
-        }
+        data: product
     });
     return updatedProduct;
 }
