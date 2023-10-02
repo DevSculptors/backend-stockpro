@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { createOrderSale, createSale, deleteSale, getSaleById, getSales } from "../services/sale.services";
 import { CreateOrderSale, CreateSale, Sale, SaleWithPersonData } from "../interfaces/Sale";
 import { validateUUID } from "../helpers/Utils";
-import { getProductById, getStockPriceProduct, updateStockProduct } from "../services/product.services";
+import { getProductById, getStockPriceProduct, modifyProduct } from "../services/product.services";
 
 export const getAllSales = async (req: Request, res: Response): Promise<Response> => {
     try {
@@ -37,7 +37,7 @@ export const registerSale = async (req: Request, res: Response): Promise<Respons
         if (!isValid[0]) return res.status(400).json({message: isValid[1]});
         products.forEach(async (product: any) => {
             const productDetail = await getStockPriceProduct(product.id);
-            await updateStockProduct(product.id, productDetail.stock-product.amount_product);
+            await modifyProduct(product.id, {stock: productDetail.stock-product.amount_product});
         });
         const sale: CreateSale = {
             date_sale: new Date(), price_sale, id_client, id_user, products

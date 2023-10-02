@@ -25,13 +25,13 @@ export interface ProductWithData extends Product {
   brand: {
     id: string;
     name: string;
-    is_active: boolean;
-    description: string;
+    is_active?: boolean;
+    description?: string;
   };
   category: {
     id: string;
     name: string;
-    is_active: boolean;
-    description: string;
+    is_active?: boolean;
+    description?: string;
   };
 }
