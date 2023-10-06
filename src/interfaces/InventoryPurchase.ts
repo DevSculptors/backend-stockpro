@@ -5,7 +5,8 @@ import { UserWithPersonData } from "./User";
 export interface InventoryPurchase {
     id: string;
     date_purchase: Date;
-    user: UserWithPersonData;
+    total_price: unknown;
+    user: Partial<UserWithPersonData>;
     person: Partial<Person>;
 }
 

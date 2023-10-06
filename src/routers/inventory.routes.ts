@@ -2,6 +2,8 @@ import { authRequired } from "../middlewares/ValidateToken";
 import { deleteInventoryPurchase, getAllInventoryPurchases, getInventoryPurchaseById, insertInventoryPurchase } from "../controllers/Inventory.controller";
 import { Express } from "express";
 import { validateUUID } from "../middlewares/ValidateId";
+import validate from "../middlewares/ValidateSchema";
+import { createInventoryPurchaseSchema } from "../schemas/inventoryRequests.schema";
 
 export default (app: Express): void => {
 /**
@@ -126,7 +128,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.post("/api/inventory", authRequired , insertInventoryPurchase);
+    app.post("/api/inventory", authRequired , validate(createInventoryPurchaseSchema),insertInventoryPurchase);
 
     /**
    * @openapi
