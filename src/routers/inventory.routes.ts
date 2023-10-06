@@ -21,9 +21,10 @@ export default (app: Express): void => {
 *       example:
 *           id: string
 *           date_purchase: Date
-*           user: {id: string, username: string, email: string, isActive: boolean, person: {id: string, name: string, last_name: string, phone: string, id_document: string, type_document: string}, roleUser: cashier}
-*           person: {id: string, name: string, last_name: string, phone: string, email: string, id_document: string, type_document: string}
-*           purchase_detail: [{id: string, quantity: number, due_date: Date, purchase_unit_price: number, product: {id: string, name_product: string, description: string, measure_unit: KG, sale_price: number, stock: number, brand: {id: string, name: string}, category: {id: string, name: string}}}]
+*           total_price: 1200 (precio total de la compra)
+*           user: {id: string, username: string, email: string}
+*           person: {id: string, name: string, last_name: string}
+*           purchase_detail: [{quantity: number, due_date: Date, purchase_unit_price: number, product: {id: string, name_product: string, brand: {id: string, name: string}, category: {id: string, name: string}}}]
 *    GetAllInventoryPurchasesResponse:
 *       type: array
 *       items:
