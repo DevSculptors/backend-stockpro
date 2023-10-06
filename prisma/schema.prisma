@@ -128,6 +128,7 @@ enum Measure {
 model Inventory_Purchase{
   id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   date_purchase DateTime
+  total_price Decimal?
   person Person @relation(fields: [id_provider], references: [id])
   id_provider String @db.Uuid
   user User @relation(fields: [id_user], references: [id])
