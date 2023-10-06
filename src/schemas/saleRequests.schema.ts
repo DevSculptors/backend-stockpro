@@ -1,7 +1,6 @@
-import { boolean, number, z } from "zod";
+import { number, z } from "zod";
 
-import { object, string, TypeOf } from "zod";
-const regexDate = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}$/;
+import { object, string } from "zod";
 
 export const createSaleSchema = object({
     body: object({

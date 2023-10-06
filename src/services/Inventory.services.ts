@@ -4,17 +4,21 @@ import {prisma } from "../helpers/Prisma";
 const QUERY_FOR_ALL_FIELDS = {
     id: true,
     date_purchase: true,
+    total_price: true,
     user: {
         select: {
             id: true,
             username: true,
             email: true,
-            isActive: true,
-            role: true,
-            person: true
         }
     },
-    person: true,
+    person: {
+        select: {
+            id: true,
+            name: true,
+            last_name: true,
+        }
+    },
     purchase_detail: {
         select: {
             quantity: true,
@@ -24,11 +28,6 @@ const QUERY_FOR_ALL_FIELDS = {
                 select: {
                     id: true,
                     name_product: true,
-                    description: true,
-                    measure_unit: true,
-                    sale_price: true,
-                    stock: true,
-                    is_active: true,
                     brand: {
                         select: {
                             id: true,
@@ -66,6 +65,7 @@ export const getInventoryPurchase = async (id: string): Promise<InventoryPurchas
 
 export const deleteInventoryPurchaseById = async (id: string): Promise<InventoryPurchase> => {
     await deletePurchaseDetail(id);
+    await deleteSaleLog(id);
     const inventoryPurchase: any = await prisma.inventory_Purchase.delete({
         where: {
             id: id
@@ -83,10 +83,20 @@ export const deletePurchaseDetail = async (id_purchase: string): Promise<any> =>
     return result;    
 }
 
+export const deleteSaleLog = async (id_purchase: string): Promise<any> => {
+    const result: any = await prisma.sale_Record.deleteMany({
+        where: {
+            id_purchase: id_purchase
+        }
+    });
+    return result;    
+}
+
 export const createInventoryPurchase = async (inventoryPurchase: createdInventoryPurchase): Promise<InventoryPurchaseWithProductData> => {
     const newInventoryPurchase: InventoryPurchaseWithProductData = await prisma.inventory_Purchase.create({
         data: {
             date_purchase: inventoryPurchase.date_purchase,
+            total_price: inventoryPurchase.total_price as number,
             person: {
                 connect: {
                     id: inventoryPurchase.person_id

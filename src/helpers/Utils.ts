@@ -10,6 +10,7 @@ import { Product } from "interfaces/Product";
 
 
 const ROLE_ADMIN = 'admin';
+const ROLE_CASHIER = 'cashier';
 
 export const EncryptPassword = async (password: string): Promise<string> => {
   const salt = await bcrypt.genSalt(10);
@@ -37,7 +38,7 @@ export const formatErrorMessage = (messages: Message[]) => {
 }
 
 export const validateRole = (role: string) => {
-  return role === ROLE_ADMIN;
+  return role === ROLE_ADMIN || role === ROLE_CASHIER;
 }
 
 export const decodeToken = async (req: Request): Promise<RoleName[]> =>{

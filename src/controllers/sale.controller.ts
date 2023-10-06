@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
-import { createOrderSale, createSale, deleteSale, getSaleById, getSales } from "../services/sale.services";
-import { CreateOrderSale, CreateSale, Sale, SaleWithPersonData } from "../interfaces/Sale";
+import { createSale, deleteSale, getSaleById, getSales } from "../services/sale.services";
+import { CreateSale, Sale, SaleWithPersonData } from "../interfaces/Sale";
 import { validateUUID } from "../helpers/Utils";
-import { getProductById, getStockPriceProduct, modifyProduct } from "../services/product.services";
+import { getStockPriceProduct, modifyProduct } from "../services/product.services";
 
 export const getAllSales = async (req: Request, res: Response): Promise<Response> => {
     try {
