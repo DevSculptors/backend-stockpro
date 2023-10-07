@@ -10,7 +10,7 @@ import router from "./routers/index.routes";
 
 import swaggerDocs from "./helpers/Swagger";
 
-const app = express();
+export const app = express();
 
 dotenv.config();
 
