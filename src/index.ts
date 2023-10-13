@@ -15,13 +15,16 @@ const app = express();
 dotenv.config();
 
 const allowedOrigins = [process.env.FRONTEND_DEPLOY_URL, process.env.FRONTEND_URL];
+console.log('Allowed Origins:', allowedOrigins);
 
 app.use(
   cors({
-    origin: allowedOrigins,
-    credentials: true,
+    origin: '*',
+    // credentials: true,
   })
 );
+
+
 
 app.use(morgan("dev"));
 app.use(compression());
