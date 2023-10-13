@@ -15,12 +15,13 @@ const app = express();
 dotenv.config();
 
 const allowedOrigins = [process.env.FRONTEND_DEPLOY_URL, process.env.FRONTEND_URL];
-console.log('Allowed Origins:', allowedOrigins);
+
+console.log(allowedOrigins);
 
 app.use(
   cors({
-    origin: '*',
-    // credentials: true,
+    origin: allowedOrigins,
+    credentials: true,
   })
 );
 
