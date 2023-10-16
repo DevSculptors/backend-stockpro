@@ -28,6 +28,9 @@ export const createInventoryPurchaseSchema = object({
             purchase_unit_price: number().min(100, {
                 message: "Precio no válido"
             }),
+            sale_unit_price: number().min(100, {
+                message: "Precio no válido"
+            }),
             product_id: string().min(36, {
                 message: "El id es inválido"
             }).max(36, {

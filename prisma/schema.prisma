@@ -142,6 +142,7 @@ model Purchase_Detail{
   quantity Int
   due_date DateTime
   purchase_unit_price Decimal
+  sale_unit_price Decimal?
   inventory_purchase Inventory_Purchase @relation(fields: [id_purchase], references: [id])
   id_purchase String @db.Uuid
   product Product @relation(fields: [id_product], references: [id])

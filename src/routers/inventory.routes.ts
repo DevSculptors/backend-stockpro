@@ -24,7 +24,7 @@ export default (app: Express): void => {
 *           total_price: 1200 (precio total de la compra)
 *           user: {id: string, username: string, email: string}
 *           person: {id: string, name: string, last_name: string}
-*           purchase_detail: [{quantity: number, due_date: Date, purchase_unit_price: number, product: {id: string, name_product: string, brand: {id: string, name: string}, category: {id: string, name: string}}}]
+*           purchase_detail: [{quantity: number, due_date: Date, purchase_unit_price: number, sale_unit_price: number, product: {id: string, name_product: string, brand: {id: string, name: string}, category: {id: string, name: string}}}]
 *    GetAllInventoryPurchasesResponse:
 *       type: array
 *       items:
@@ -40,7 +40,7 @@ export default (app: Express): void => {
 *           date_purchase: Date (puede usar new Date())
 *           person_id: string
 *           user_id: string
-*           purchase_detail: [{quantity: number, due_date: Date, purchase_unit_price: number, product_id: string}]
+*           purchase_detail: [{quantity: number, due_date: Date, purchase_unit_price: number, sale_unit_price: number ,product_id: string}]
 *     
 */
 

@@ -4,7 +4,7 @@ import {prisma } from "../helpers/Prisma";
 export const getAllCategoryProducts = async (skip: number, limit: number): Promise<CategoryProduct[]> => {
     const categoryProducts: CategoryProduct[] = await prisma.category_Product.findMany({
         skip: skip,
-        take: limit,
+        // take: limit,
         orderBy: {
             name: "asc"
         }

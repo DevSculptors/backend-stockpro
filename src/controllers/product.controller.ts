@@ -9,7 +9,7 @@ import { getCategoryById } from "../services/categoryProduct.services";
 export const getAllProducts = async (req: Request, res: Response): Promise<Response> => {
     try {
         const page = Number(req.query.page) || 0;
-        const limit = Number(req.query.limit) || 100;
+        const limit = Number(req.query.limit) || 0;
         const products: ProductWithData[] = await getProducts(calculateSkip(page, limit), limit);
         products.forEach((product: Product) => {
             castProductSalePrice(product)
