@@ -29,7 +29,7 @@ export const getProducts = async (skip: number, limit: number): Promise<ProductW
             }
         },
         skip: skip,
-        take: limit,
+        // take: limit,
         orderBy: {
             name_product: "asc"
         }
