@@ -21,7 +21,7 @@ export const getUsers = async (skip: number, limit: number): Promise<UserWithPer
       }
     },
     skip: skip,
-    take: limit,
+    // take: limit,
     orderBy: {
       username: "asc"
     }

@@ -71,7 +71,7 @@ export const updateInventory = async (purchase_detail: Array<any>): Promise<numb
         purchase_detail.map(async (product: any) => {
         const productDetail = await getStockPriceProduct(product.product_id);
         total_price += product.quantity * product.purchase_unit_price;
-        await modifyProduct(product.product_id, { sale_price: product.purchase_unit_price ,stock: productDetail.stock+product.quantity});
+        await modifyProduct(product.product_id, { sale_price: product.sale_unit_price ,stock: productDetail.stock+product.quantity});
     }));
     return total_price;
 }

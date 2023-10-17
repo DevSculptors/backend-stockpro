@@ -4,6 +4,7 @@ import { createSale, deleteSale, getSaleById, getSales } from "../services/sale.
 import { CreateSale, Sale, SaleWithPersonData } from "../interfaces/Sale";
 import { validateUUID } from "../helpers/Utils";
 import { getStockPriceProduct, modifyProduct } from "../services/product.services";
+import { Product } from "../interfaces/Product";
 
 export const getAllSales = async (req: Request, res: Response): Promise<Response> => {
     try {
@@ -36,7 +37,7 @@ export const registerSale = async (req: Request, res: Response): Promise<Respons
         let isValid = await validateProducts(req);
         if (!isValid[0]) return res.status(400).json({message: isValid[1]});
         products.forEach(async (product: any) => {
-            const productDetail = await getStockPriceProduct(product.id);
+            const productDetail: Partial<Product> = await getStockPriceProduct(product.id);
             await modifyProduct(product.id, {stock: productDetail.stock-product.amount_product});
         });
         const sale: CreateSale = {
