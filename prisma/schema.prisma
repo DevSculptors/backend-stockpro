@@ -55,9 +55,11 @@ model Role{
 
 model Turn {
   id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  date_time DateTime
-  cash Decimal
-  is_open Boolean
+  date_time_start DateTime
+  base_cash Decimal
+  date_time_end DateTime?
+  final_cash Decimal?
+  is_active Boolean @default(true)
   withdrawals Withdrawal[]
   user User @relation(fields: [id_user], references: [id])
   id_user String @db.Uuid
@@ -75,7 +77,7 @@ model Withdrawal{
 
 model Cash_Register{
   id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String @db.Uuid
+  name String
   location String
   turns Turn[]
 }
