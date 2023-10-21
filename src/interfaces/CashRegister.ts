@@ -22,6 +22,10 @@ export type Turn = {
 export type CreateTurn = Omit<Turn, 'id' | 'is_active'>;
 export type UpdateTurn = Partial<Turn>;
 
-export type CashRegisterTurn = Partial<CashRegister> & {
+export type CashRegisterTurns = Partial<CashRegister> & {
     turns: Turn[];
+}
+
+export type CashRegisterTurn = Partial<CashRegister> & {
+    turn?: Partial<Turn>;
 }

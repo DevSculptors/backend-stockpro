@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CashRegister, CashRegisterTurn, CreateCashRegister, CreateTurn, Turn, UpdateCashRegister, UpdateTurn } from "../interfaces/CashRegister";
+import { CashRegister, CashRegisterTurn, CashRegisterTurns, CreateCashRegister, CreateTurn, Turn, UpdateCashRegister, UpdateTurn } from "../interfaces/CashRegister";
 import { closeTurn, createNewCashRegister, createTurn, createWithdrawal, deleteOneCashRegister, getAllCashRegisters, getCashRegisterById, getTurnById, updateCashRegister } from "../services/CashRegister.services";
 import { CreateWithdrawal, UpdateWithdrawal, Withdrawal } from "interfaces/Withdrawal";
 
@@ -103,7 +103,7 @@ export const saveWithdrawal = async (req: Request, res: Response): Promise<Respo
 export const deleteCashRegister = async (req: Request, res: Response): Promise<Response> => {
     try {
         const id = req.params.id;
-        const cashRegister: CashRegisterTurn = await getCashRegisterById(id);
+        const cashRegister: CashRegisterTurns = await getCashRegisterById(id);
         if (!cashRegister) return res.status(404).json({ message: "Cash register not found" });
         await deleteOneCashRegister(id, cashRegister.turns);
         return res.status(204).json({ message: "Cash register deleted" });

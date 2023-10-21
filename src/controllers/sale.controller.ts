@@ -9,6 +9,10 @@ import { Product } from "../interfaces/Product";
 export const getAllSales = async (req: Request, res: Response): Promise<Response> => {
     try {
         const sales: SaleWithPersonData[] = await getSales();
+        sales.forEach((sale) => {
+            sale.turn.user.roleUser = sale.turn.user.role.name;
+            delete sale.turn.user.role;
+        });
         return res.status(200).json(sales);
     } catch (error) {
         console.log(error);
@@ -22,8 +26,8 @@ export const getInfoSaleById = async (req: Request, res: Response): Promise<Resp
         if (!validateUUID(id)) return res.status(400).json({message: "Invalid id"});
         const sale: SaleWithPersonData = await getSaleById(id);
         if (!sale) return res.status(404).json({message: "Sale not found"});
-        sale.user.roleUser = sale.user.role.name;
-        delete sale.user.role;
+        sale.turn.user.roleUser = sale.turn.user.role.name;
+        delete sale.turn.user.role;
         return res.status(200).json(sale);
     } catch (error) {
         console.log(error);
@@ -33,7 +37,7 @@ export const getInfoSaleById = async (req: Request, res: Response): Promise<Resp
 
 export const registerSale = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const { price_sale, id_client, id_user, products } = req.body;
+        const { price_sale, id_client, id_user, products,id_turn } = req.body;
         let isValid = await validateProducts(req);
         if (!isValid[0]) return res.status(400).json({message: isValid[1]});
         products.forEach(async (product: any) => {
@@ -41,11 +45,11 @@ export const registerSale = async (req: Request, res: Response): Promise<Respons
             await modifyProduct(product.id, {stock: productDetail.stock-product.amount_product});
         });
         const sale: CreateSale = {
-            date_sale: new Date(), price_sale, id_client, id_user, products
+            date_sale: new Date(), price_sale, id_client, id_user, id_turn,products
         }
         const newSale: SaleWithPersonData = await createSale(sale);
-        newSale.user.roleUser = newSale.user.role.name;
-        delete newSale.user.role;
+        newSale.turn.user.roleUser = newSale.turn.user.role.name;
+        delete newSale.turn.user.role;
         return res.status(201).json(newSale);
     } catch (error) {
         console.log(error);
