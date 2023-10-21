@@ -18,15 +18,15 @@ export default (app: Express): void => {
 *           - date_sale
 *           - price_sale
 *           - person
-*           - user
 *           - orders   
+*           - turn
 *       example:
 *           id: string
 *           date_sale: Date
 *           price_sale: 1200 (precio total de la venta)
 *           person: {id: string, name: string, last_name: string, phone: string, email: string, id_document: string, type_document: string}
-*           user: {id: string, username: string, email: string, isActive: boolean, person: {id: string, name: string, last_name: string, phone: string, id_document: string, type_document: string}, roleUser: cashier}
 *           orders: [{id: string, price: number (precio de la cantidad de unidades de un producto x precio individual), amount_product: number, product: {id: string, name_product: string, description: string, measure_unit: KG, sale_price: number, stock: number, brand: {id: string, name: string}, category: {id: string, name: string}}}]
+*           turn: {id: string, date_time_start: Date, base_cash: number, date_time_end: Date, final_cash: number, is_active: boolean, user: {id: string, username: string, email: string, roleUser: cashier}}
 *    SalesResponse:
 *       type: array
 *       items:
@@ -37,11 +37,13 @@ export default (app: Express): void => {
 *           - price_sale
 *           - id_client
 *           - id_user
+*           - id_turn
 *           - products
 *       example:
 *           price_sale: 1200
 *           id_client: string
 *           id_user: string
+*           id_turn: string
 *           products: [{id: string, amount_product: 5}] 
 *     
 */

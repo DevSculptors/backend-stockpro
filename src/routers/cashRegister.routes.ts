@@ -83,6 +83,19 @@ export default (app: Express): void => {
 *           id: string
 *           withdrawal_date: Date
 *           value: 20000
+*    OpenTurnResponse:
+*       type: object
+*       required:
+*           - id
+*           - name
+*           - location
+*           - turn
+*       example:
+*           id: string
+*           name: string
+*           location: string
+*           turn: {id: string, date_time_start: Date, base_cash: number, date_time_end: Date, final_cash: number ,is_active: boolean, user: {id: string, username: string, email: string}, withdrawals: [{id: string, withdrawal_date: Date, value: number}]}
+*           
 */
      
     /**
@@ -232,7 +245,7 @@ export default (app: Express): void => {
    *        content:
    *          application/json:
    *            schema:
-   *                $ref: '#/components/schemas/CashRegisterResponse'
+   *                $ref: '#/components/schemas/OpenTurnResponse'
    *       400:
    *        description: Bad request
    *        content:
@@ -270,7 +283,7 @@ export default (app: Express): void => {
    *        content:
    *          application/json:
    *            schema:
-   *                $ref: '#/components/schemas/CashRegisterResponse'
+   *                $ref: '#/components/schemas/OpenTurnResponse'
    *       400:
    *        description: Bad request
    *        content:
