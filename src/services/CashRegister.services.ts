@@ -1,4 +1,4 @@
-import { CashRegister, CashRegisterTurn, CreateCashRegister, CreateTurn, Turn, UpdateCashRegister, UpdateTurn } from "../interfaces/CashRegister";
+import { CashRegister, CashRegisterTurn, CashRegisterTurns, CreateCashRegister, CreateTurn, Turn, UpdateCashRegister, UpdateTurn } from "../interfaces/CashRegister";
 import {prisma } from "../helpers/Prisma";
 import { CreateWithdrawal, Withdrawal } from "../interfaces/Withdrawal";
 
@@ -32,8 +32,8 @@ const QUERY_FOR_CASH_REGISTER_WITH_TURNS = {
     },
 }
 
-export const getAllCashRegisters = async (): Promise<CashRegisterTurn[]> => {
-    const cashRegisters: CashRegisterTurn[] = await prisma.cash_Register.findMany({
+export const getAllCashRegisters = async (): Promise<CashRegisterTurns[]> => {
+    const cashRegisters: CashRegisterTurns[] = await prisma.cash_Register.findMany({
         orderBy: {
             name: "asc"
         },
@@ -42,8 +42,8 @@ export const getAllCashRegisters = async (): Promise<CashRegisterTurn[]> => {
     return cashRegisters;
 }
 
-export const getCashRegisterById = async (id: string): Promise<CashRegisterTurn> => {
-    const cashRegister: CashRegisterTurn = await prisma.cash_Register.findUnique({
+export const getCashRegisterById = async (id: string): Promise<CashRegisterTurns> => {
+    const cashRegister: CashRegisterTurns = await prisma.cash_Register.findUnique({
         where: {
             id: id
         },
@@ -70,25 +70,55 @@ export const updateCashRegister = async (updateCashRegister: UpdateCashRegister)
 }
 
 export const createTurn = async (cashRegisterId: string, userId: string, turnData: CreateTurn): Promise<CashRegisterTurn> => {
-    const cashRegister: CashRegisterTurn = await prisma.cash_Register.update({
-        where: {
-            id: cashRegisterId
-        },
+    const turn = await prisma.turn.create({
         data: {
-            turns: {
-                create: {
-                    date_time_start: turnData.date_time_start,
-                    base_cash: turnData.base_cash as number,
-                    user: {
-                        connect: {
-                            id: userId
-                        }
-                    }
+            date_time_start: turnData.date_time_start,
+            base_cash: turnData.base_cash as number,
+            user: {
+                connect: {
+                    id: userId
+                }
+            },
+            cash_register: {
+                connect: {
+                    id: cashRegisterId
                 }
             }
         },
-        select: QUERY_FOR_CASH_REGISTER_WITH_TURNS
+        select: {
+            id: true,
+            date_time_start: true,
+            base_cash: true,
+            date_time_end: true,
+            final_cash: true,
+            is_active: true,
+            user: {
+                select: {
+                    id: true,
+                    username: true,
+                    email: true,
+                }
+            },
+            withdrawals: {
+                select: {
+                    id: true,
+                    withdrawal_date: true,
+                    value: true
+                }
+            }
+        }
     });
+    const cashRegister: CashRegisterTurn = await prisma.cash_Register.findUnique({
+        where: {
+            id: cashRegisterId
+        },
+        select: {
+            id: true,
+            name: true,
+            location: true,
+        }
+    });
+    cashRegister.turn = turn;
     return cashRegister;
 }
 
@@ -111,8 +141,40 @@ export const closeTurn = async (cashRegisterId: string, turn: UpdateTurn): Promi
                 }
             }
         },
-        select: QUERY_FOR_CASH_REGISTER_WITH_TURNS
+        select: {
+            id: true,
+            name: true,
+            location: true,
+        }
     });
+    const turnFound: Turn = await prisma.turn.findUnique({
+        where: {
+            id: turn.id
+        },
+        select: {
+            id: true,
+            date_time_start: true,
+            base_cash: true,
+            date_time_end: true,
+            final_cash: true,
+            is_active: true,
+            user: {
+                select: {
+                    id: true,
+                    username: true,
+                    email: true,
+                }
+            },
+            withdrawals: {
+                select: {
+                    id: true,
+                    withdrawal_date: true,
+                    value: true
+                }
+            }
+        }
+    });
+    cashRegister.turn = turnFound;
     return cashRegister;
 }
 

@@ -1,24 +1,14 @@
 import {prisma } from "../helpers/Prisma";
 
-import { CreateOrderSale, CreateSale, OrderSale, Sale, SaleWithPersonData } from "../interfaces/Sale";
+import { CreateSale, Sale, SaleWithPersonData } from "../interfaces/Sale";
 
 const QUERY_FOR_ALL_FIELDS = {
     id: true,
     date_sale: true,
     price_sale: true,
     person: true,
-    user: {
-        select: {
-            id: true,
-            username: true,
-            email: true,
-            isActive: true,
-            person: true,
-            role: true
-        }
-    },
     oders: {
-        select: {
+        select:{
             id: true,
             price: true,
             amount_product: true,
@@ -45,55 +35,30 @@ const QUERY_FOR_ALL_FIELDS = {
                 }
             }
         }
-    }
-}
-
-export const getSales = async (): Promise<SaleWithPersonData[]> => {
-    const sales: SaleWithPersonData[] = await prisma.sale.findMany({
+    },
+    turn: {
         select: {
             id: true,
-            date_sale: true,
-            price_sale: true,
-            person: true,
+            date_time_start: true,
+            base_cash: true,
+            date_time_end: true,
+            final_cash: true,
+            is_active: true,
             user: {
                 select: {
                     id: true,
                     username: true,
                     email: true,
-                    isActive: true,
-                    person: true
+                    role: true,
                 }
             },
-            oders: {
-                select: {
-                    id: true,
-                    price: true,
-                    amount_product: true,
-                    product: {
-                        select: {
-                            id: true,
-                            name_product: true,
-                            description: true,
-                            measure_unit: true,
-                            sale_price: true,
-                            stock: true,
-                            brand: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                }
-                            },
-                            category: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
+    }
+}
+
+export const getSales = async (): Promise<SaleWithPersonData[]> => {
+    const sales: SaleWithPersonData[] = await prisma.sale.findMany({
+        select: QUERY_FOR_ALL_FIELDS
     });
     return sales;    
 }
@@ -118,10 +83,10 @@ export const createSale = async (data: CreateSale): Promise<SaleWithPersonData> 
                     id: data.id_client
                 }
             },
-            user: {
+            turn: {
                 connect: {
-                    id: data.id_user
-                }
+                    id: data.id_turn
+                },
             },
             oders: {
                 create: data.products.map((product: any) => {
