@@ -1,6 +1,6 @@
 import { Express } from "express";
 import { authRequired } from "../middlewares/ValidateToken";
-import { closeTurnForCashRegister, createCashRegister, deleteCashRegister, getAllCashRegister, getOneCashRegister, openTurnForCashRegister, saveWithdrawal, updateOneCashRegister } from "../controllers/CashRegister.controller";
+import { closeTurnForCashRegister, createCashRegister, deleteCashRegister, getAllCashRegister, getAllSalesByTurn, getOneCashRegister, openTurnForCashRegister, saveWithdrawal, updateOneCashRegister } from "../controllers/CashRegister.controller";
 import { validateUUID } from "../middlewares/ValidateId";
 import validate from "../middlewares/ValidateSchema";
 import { closeTurnSchema, createCashRegisterSchema, createTurnSchema, createWithdrawalSchema, updateCashRegisterSchema } from "../schemas/cashRegister.schema";
@@ -95,7 +95,22 @@ export default (app: Express): void => {
 *           name: string
 *           location: string
 *           turn: {id: string, date_time_start: Date, base_cash: number, date_time_end: Date, final_cash: number ,is_active: boolean, user: {id: string, username: string, email: string}, withdrawals: [{id: string, withdrawal_date: Date, value: number}]}
-*           
+*    TurnSaleResponse:
+*       type: object
+*       required:
+*           - id
+*           - date_sale
+*           - price_sale
+*           - oders
+*       example:
+*           id: string
+*           date_sale: Date
+*           price_sale: number (precio total de esa venta)
+*           oders: [{id: string, price: number (precio de la cantidad de unidades de un producto x precio individual), amount_product: number, product: {id: string, name_product: string, measure_unit: KG, sale_price: number, stock: number, brand: {id: string, name: string}, category: {id: string, name: string}}}] 
+*    AllTurnSalesResponse:
+*       type: array
+*       items:
+*           $ref: '#components/schemas/TurnSaleResponse'
 */
      
     /**
@@ -331,7 +346,39 @@ export default (app: Express): void => {
    */
     app.post("/api/cashRegister/turn/:id", authRequired, validateUUID, validate(createWithdrawalSchema), saveWithdrawal);
 
-       /**
+      /**
+   * @openapi
+   * /api/cashRegister/turn/sales/{id}:
+   *  get:
+   *     tags:
+   *     - CashRegister
+   *     summary: Get all sales associated with a turn
+   *     parameters:
+   *      - in: path
+   *        name: id
+   *        required: true
+   *        description: turn id
+   *        schema:
+   *          type: string
+   *     security: 
+   *      - bearerAuth: []
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/AllTurnSalesResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+    app.get("/api/cashRegister/turn/sales/:id", authRequired, getAllSalesByTurn);
+
+    /**
    * @openapi
    * /api/cashRegister/{id}:
    *  delete:
