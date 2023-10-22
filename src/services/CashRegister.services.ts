@@ -1,6 +1,7 @@
 import { CashRegister, CashRegisterTurn, CashRegisterTurns, CreateCashRegister, CreateTurn, Turn, UpdateCashRegister, UpdateTurn } from "../interfaces/CashRegister";
 import {prisma } from "../helpers/Prisma";
 import { CreateWithdrawal, Withdrawal } from "../interfaces/Withdrawal";
+import { Sale } from "../interfaces/Sale";
 
 const QUERY_FOR_CASH_REGISTER_WITH_TURNS = {
     id: true,
@@ -200,6 +201,49 @@ export const getTurnById = async (id: string): Promise<Turn> => {
         }
     });
     return turn;
+}
+
+export const getSalesByTurn = async (turnId: string): Promise<Sale[]> => {
+    const sales: Sale[] = await prisma.sale.findMany({
+        where: {
+            id_turn: turnId
+        },
+        select: {
+            id: true,
+            date_sale: true,
+            price_sale: true,
+            person: false,
+            oders: {
+                select:{
+                    id: true,
+                    price: true,
+                    amount_product: true,
+                    product: {
+                        select: {
+                            id: true,
+                            name_product: true,
+                            measure_unit: true,
+                            sale_price: true,
+                            stock: true,
+                            brand: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                }
+                            },
+                            category: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+        }
+    });
+    return sales;
 }
 
 export const deleteOneCashRegister = async (id: string, turns: Turn[]): Promise<void> => {
