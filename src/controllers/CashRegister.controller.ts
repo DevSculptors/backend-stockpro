@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { CashRegister, CashRegisterTurn, CashRegisterTurns, CreateCashRegister, CreateTurn, Turn, UpdateCashRegister, UpdateTurn } from "../interfaces/CashRegister";
-import { closeTurn, createNewCashRegister, createTurn, createWithdrawal, deleteOneCashRegister, getAllCashRegisters, getCashRegisterById, getTurnById, updateCashRegister } from "../services/CashRegister.services";
+import { closeTurn, createNewCashRegister, createTurn, createWithdrawal, deleteOneCashRegister, getAllCashRegisters, getCashRegisterById, getSalesByTurn, getTurnById, updateCashRegister } from "../services/CashRegister.services";
 import { CreateWithdrawal, UpdateWithdrawal, Withdrawal } from "interfaces/Withdrawal";
+import { Sale } from "../interfaces/Sale";
 
 export const getAllCashRegister = async (req: Request, res: Response): Promise<Response> => {
     try {
@@ -107,6 +108,19 @@ export const deleteCashRegister = async (req: Request, res: Response): Promise<R
         if (!cashRegister) return res.status(404).json({ message: "Cash register not found" });
         await deleteOneCashRegister(id, cashRegister.turns);
         return res.status(204).json({ message: "Cash register deleted" });
+    }catch (error) {
+        console.log(error.message);
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+export const getAllSalesByTurn = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const id_turn = req.params.id;
+        const turnFound: Turn = await getTurnById(id_turn);
+        if (!turnFound) return res.status(404).json({ message: "Turn not found" });
+        const sales: Sale[] = await getSalesByTurn(id_turn);
+        return res.status(200).json(sales);
     }catch (error) {
         console.log(error.message);
         return res.status(500).json({ message: error.message });
