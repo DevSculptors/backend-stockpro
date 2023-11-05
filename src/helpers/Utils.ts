@@ -6,7 +6,8 @@ import { Message } from "./Errors";
 import { RoleName } from "../interfaces/Role";
 import { verifyToken } from "./Token";
 import  isUUID from 'uuid-validate';
-import { Product } from "interfaces/Product";
+import { Product } from "../interfaces/Product";
+import { ValueOfDay } from "../interfaces/Sale";
 
 
 const ROLE_ADMIN = 'admin';
@@ -62,3 +63,12 @@ export const calculateSkip = (page: number, limit: number) =>{
   const skip = (page-1)*limit;
   return skip < 0 ? 0 : skip;
 }
+
+export const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+export const chartData: ValueOfDay[] = weekday.map((day) => {
+  return {
+      day: day,
+      value: 0
+  }
+});
