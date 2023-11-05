@@ -1,6 +1,6 @@
 import { Express } from "express";
 
-import { deleteSaleById, getAllSales, getInfoSaleById, registerSale } from "../controllers/sale.controller";
+import { deleteSaleById, getAllSales, getInfoSaleById, getSalesReportByWeek, getTopCategories, getTopSales, getTotalClients, getTotalProducts, getTotalRevenue, getTotalSales, registerSale } from "../controllers/sale.controller";
 import { createSaleSchema } from "../schemas/saleRequests.schema";
 import validate from "../middlewares/ValidateSchema";
 import { authRequired } from "../middlewares/ValidateToken";
@@ -11,6 +11,58 @@ export default (app: Express): void => {
 * @openapi
 * components:
 *  schemas:
+*    TotalClients: 
+*       type: object
+*       required:
+*           - totalRegisteredClients
+*           - client
+*       example:
+*           totalRegisteredClients: number
+*           client: {id: string, name: string, last_name: string, phone: string, email: string, id_document: string, type_document: string}
+*    topSales:
+*       type: object
+*       required:
+*           - person
+*           - price_sale
+*       example:
+*           person: {name: string, last_name: string, phone: string}
+*           price_sale: number
+*    topSalesResponse:
+*       type: array
+*       items:
+*           $ref: '#components/schemas/topSales'
+*    SalesByWeek:
+*       type: object
+*       required:
+*           - day
+*           - value
+*       example:
+*           day: string
+*           value: number
+*    SalesByWeekResponse:
+*       type: array
+*       items:
+*           $ref: '#components/schemas/SalesByWeek'
+*    TotalMonthReportResponse:
+*       type: object
+*       required:
+*           - total
+*           - chartData
+*       example:
+*           total: number
+*           chartData: [{day: string, value: number}]
+*    TopSales:
+*       type: object
+*       required:
+*           - person
+*           - price_sale
+*       example:
+*           person: {name: string, last_name: string, phone: string}
+*           price_sale: number
+*    TopSalesResponse:
+*       type: array
+*       items:
+*           $ref: '#components/schemas/TopSales'
 *    SaleResponse:
 *       type: object
 *       required:
@@ -49,7 +101,7 @@ export default (app: Express): void => {
 */
 
 
-    /**
+  /**
    * @openapi
    * /api/sales:
    *  get:
@@ -73,6 +125,181 @@ export default (app: Express): void => {
    *              $ref: '#/components/schemas/BadRequest' 
    */
     app.get("/api/sales", authRequired, getAllSales);
+
+  /**
+   * @openapi
+   * /api/sales/reportByWeek:
+   *  get:
+   *     tags:
+   *     - Report
+   *     summary: get total sales by day of one week (Default last week)
+   *     security: 
+   *      - bearerAuth: []
+   *     parameters:
+   *      - in: query
+   *        name: sundayDate 
+   *        required: false
+   *        description: sunday date of the week (optional)
+   *        schema:
+   *        type: string
+   *        format: date
+   *      - in: query
+   *        name: saturdayDate  
+   *        required: false
+   *        description: saturday date of the week (optional)
+   *        schema:
+   *        type: string
+   *        format: date
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+  *               $ref: '#/components/schemas/SalesByWeekResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+    app.get("/api/sales/reportByWeek", getSalesReportByWeek);
+
+  /**
+   * @openapi
+   * /api/sales/topSales:
+   *  get:
+   *     tags:
+   *     - Report
+   *     summary: get top sales of clients (default return 10)
+   *     security: 
+   *      - bearerAuth: []
+   *     parameters:
+   *      - in: query
+   *        name: top 
+   *        required: false
+   *        description: top number of sales (optional)
+   *        schema:
+   *        type: number
+   *        format: int
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+  *               $ref: '#/components/schemas/topSalesResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+    app.get("/api/sales/topSales", getTopSales);
+
+    app.get("/api/sales/topCategories", getTopCategories);
+
+  /**
+   * @openapi
+   * /api/sales/totalSales:
+   *  get:
+   *     tags:
+   *     - Report
+   *     summary: get total sales of this month with the total sales by day of week
+   *     security: 
+   *      - bearerAuth: []
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+  *               $ref: '#/components/schemas/TotalMonthReportResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+    app.get("/api/sales/totalSales", getTotalSales);
+
+  /**
+   * @openapi
+   * /api/sales/totalRevenue:
+   *  get:
+   *     tags:
+   *     - Report
+   *     summary: get total revenue of this month with revenue by day of week
+   *     security: 
+   *      - bearerAuth: []
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+  *               $ref: '#/components/schemas/TotalMonthReportResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+    app.get("/api/sales/totalRevenue", getTotalRevenue);
+
+  /**
+   * @openapi
+   * /api/sales/totalProducts:
+   *  get:
+   *     tags:
+   *     - Report
+   *     summary: get total products sold of this month with products sold by day of week
+   *     security: 
+   *      - bearerAuth: []
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+  *               $ref: '#/components/schemas/TotalMonthReportResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+    app.get("/api/sales/totalProducts", getTotalProducts);
+
+  /**
+   * @openapi
+   * /api/sales/totalClients:
+   *  get:
+   *     tags:
+   *     - Report
+   *     summary: get total clients of this month with the best client of the month
+   *     security: 
+   *      - bearerAuth: []
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+  *               $ref: '#/components/schemas/TotalClients'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+    app.get("/api/sales/totalClients", getTotalClients);
 
      /**
    * @openapi
@@ -135,9 +362,9 @@ export default (app: Express): void => {
    *          application/json:
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
-   */
-		app.post("/api/sales", authRequired, validate(createSaleSchema), registerSale);
-
+     */
+    app.post("/api/sales", authRequired, validate(createSaleSchema), registerSale);
+    
     /**
    * @openapi
    * /api/sales/{id}:

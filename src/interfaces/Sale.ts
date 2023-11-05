@@ -8,6 +8,8 @@ export interface Sale {
     price_sale: unknown;
 }
 
+export type ValueOfDay = { day: string,value: number }
+
 export type CreateSale = Omit<Sale, "id" | "price_sale"> &{
     price_sale: number;
     id_client: string;
@@ -39,4 +41,11 @@ export interface SaleWithPersonData extends Sale {
         is_active: boolean;
         user: Partial<UserWithPersonData>;
     }
+}
+
+export type SaleWithPersonDataOptional = Partial<Sale>;
+
+export type ReportByMonth = {
+    total: number;
+    chartData: ValueOfDay[];
 }

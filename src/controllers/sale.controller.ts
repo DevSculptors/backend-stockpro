@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 
-import { createSale, deleteSale, getSaleById, getSales } from "../services/sale.services";
-import { CreateSale, Sale, SaleWithPersonData } from "../interfaces/Sale";
-import { validateUUID } from "../helpers/Utils";
+import { createSale, deleteSale, getBestClientOfTheMonth, getSaleById, getSales, getSalesBetween, getTopClientSale, getTopProducts, getTotalProductsByMonth, getTotalRevenueByMonth, getTotalSalesByMonth } from "../services/sale.services";
+import { CreateSale, ValueOfDay, ReportByMonth, Sale, SaleWithPersonData, SaleWithPersonDataOptional } from "../interfaces/Sale";
+import { chartData, validateUUID } from "../helpers/Utils";
 import { getStockPriceProduct, modifyProduct } from "../services/product.services";
 import { Product } from "../interfaces/Product";
+import { getClients } from "../services/person.services";
+import { Person } from "../interfaces/Person";
 
 export const getAllSales = async (req: Request, res: Response): Promise<Response> => {
     try {
@@ -90,3 +92,107 @@ export const deleteSaleById = async (req: Request, res: Response): Promise<Respo
         return res.status(500).json({message: error.message});
     }
 }
+
+export const getSalesReportByWeek = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const sunday:string = req.query.sundayDate as string;
+        const saturday:string = req.query.saturdayDate as string;
+        let sundayDate:Date;
+        let saturdayDate:Date;
+        if (!sunday && !saturday) {
+            const currentdate: Date = new Date();
+            sundayDate = new Date(currentdate)
+            sundayDate.setDate(currentdate.getDate() - currentdate.getUTCDay());
+            sundayDate.setDate(sundayDate.getDate() - 7);
+            sundayDate.setHours(0,0,0,0);
+            saturdayDate = new Date(currentdate);
+            saturdayDate.setDate(currentdate.getDate() - currentdate.getUTCDay());
+            saturdayDate.setDate(saturdayDate.getDate() - 1);
+            saturdayDate.setHours(0,0,0,0);
+        }else{
+            sundayDate = new Date(sunday);
+            saturdayDate = new Date(saturday);
+        }
+        const sales: Sale[] = await getSalesBetween(sundayDate, saturdayDate);
+        chartData.forEach((item: ValueOfDay) => {
+            item.value = 0;
+        });
+        sales.forEach((sale: Sale) => {
+            const date:Date = new Date(sale.date_sale);
+            const dayNumber:number = date.getUTCDay();
+            let incomeOfDay:ValueOfDay = chartData[dayNumber];
+            incomeOfDay.value = Number(incomeOfDay.value) + Number(sale.price_sale)
+            chartData[dayNumber] = incomeOfDay;
+        });
+        return res.status(200).json(chartData);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTopSales = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const limit = Number(req.query.top) || 10;
+        const topSales: SaleWithPersonDataOptional[] = await getTopClientSale(limit);
+        return res.status(200).json(topSales);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+/** to do.. */
+export const getTopCategories = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const limit = Number(req.query.top) || 10;
+        const topCategories: any = await getTopProducts(limit);
+        return res.status(200).json(topCategories);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTotalSales = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const totalSales: ReportByMonth = await getTotalSalesByMonth();
+        return res.status(200).json(totalSales);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTotalRevenue = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const totalSales: ReportByMonth = await getTotalRevenueByMonth();
+        return res.status(200).json(totalSales);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTotalProducts = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const totalProducts: ReportByMonth = await getTotalProductsByMonth();
+        return res.status(200).json({total: totalProducts});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTotalClients = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const clientsList: Person[] = await getClients(0, 0);
+        const bestClient: any = await getBestClientOfTheMonth();
+        const client: Person = clientsList.find((client) => client.id == bestClient.id) as Person;
+        return res.status(200).json({totalRegisteredClients: clientsList.length, client: client});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
