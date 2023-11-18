@@ -1,6 +1,7 @@
 import { number, z } from "zod";
 
 import { object, string, array } from "zod";
+import { emailRegex } from "./personRequest.schema";
 
 const regexDate = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})\.(\d{3})Z$/;
 
@@ -67,7 +68,11 @@ export const closeTurnSchema = object({
         }),
         final_cash: number().min(100, {
             message: "El valor no es válido"
-        })
+        }),
+        admin_email: string().regex(emailRegex, {
+            message: "El email no es válido"
+        }),
+        password: string(),
     })
 });
 
