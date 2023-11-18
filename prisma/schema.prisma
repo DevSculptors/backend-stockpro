@@ -65,6 +65,15 @@ model Turn {
   cash_register Cash_Register @relation(fields: [id_cash_register], references: [id])
   id_cash_register String @db.Uuid
   sales Sale[]
+  imbalance_logs Imbalance_Log[]
+}
+
+model Imbalance_Log {
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  value Decimal
+  description String
+  turn Turn @relation(fields: [id_turn], references: [id])
+  id_turn String @db.Uuid
 }
 
 model Withdrawal{

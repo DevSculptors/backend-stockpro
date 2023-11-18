@@ -1,6 +1,6 @@
 import { Express } from "express";
 import { authRequired } from "../middlewares/ValidateToken";
-import { closeTurnForCashRegister, createCashRegister, deleteCashRegister, getAllCashRegister, getAllSalesByTurn, getOneCashRegister, openTurnForCashRegister, saveWithdrawal, updateOneCashRegister } from "../controllers/CashRegister.controller";
+import { closeTurnForCashRegister, createCashRegister, deleteCashRegister, getAllCashRegister, getAllCashRegisterWithdrawals, getAllSalesByTurn, getAllWithDrawals, getOneCashRegister, getTurnInfoById, getWithdrawalsByTurn, openTurnForCashRegister, saveWithdrawal, updateOneCashRegister } from "../controllers/CashRegister.controller";
 import { validateUUID } from "../middlewares/ValidateId";
 import validate from "../middlewares/ValidateSchema";
 import { closeTurnSchema, createCashRegisterSchema, createTurnSchema, createWithdrawalSchema, updateCashRegisterSchema } from "../schemas/cashRegister.schema";
@@ -61,10 +61,18 @@ export default (app: Express): void => {
 *           - id_turn
 *           - date_time_end
 *           - final_cash
+*           - admin_email
+*           - password
+*           - value
+*           - description
 *       example:
 *           id_turn: string
 *           date_time_end: Date
 *           final_cash: number
+*           admin_email: string
+*           password: string
+*           value: number (optional for imbalance log)
+*           description: string (optional for imbalance log)
 *    CreateWithdrawal:
 *       type: object 
 *       required:
@@ -111,6 +119,42 @@ export default (app: Express): void => {
 *       type: array
 *       items:
 *           $ref: '#components/schemas/TurnSaleResponse'
+*    TurnResponse:
+*       type: object
+*       required:
+*           - id
+*           - date_time_start
+*           - base_cash
+*           - date_time_end
+*           - final_cash
+*           - is_active
+*           - id_user 
+*           - id_cash_register
+*       example:
+*           id: string
+*           date_time_start: Date
+*           base_cash: number
+*           date_time_end: Date
+*           final_cash: number
+*           is_active: boolean
+*           id_user: string
+*           id_cash_register: string
+*    WithdrawalInfo:
+*       type: object
+*       required:
+*           - id
+*           - id_turn
+*           - withdrawal_date
+*           - value
+*       example:
+*           id: string
+*           id_turn: string
+*           withdrawal_date: Date
+*           value: 20000
+*    AllWithdrawalInfoResponse:
+*       type: array
+*       items:
+*           $ref: '#components/schemas/WithdrawalInfo' 
 */
      
     /**
@@ -137,6 +181,31 @@ export default (app: Express): void => {
    *              $ref: '#/components/schemas/BadRequest' 
    */
     app.get("/api/cashRegister", authRequired, getAllCashRegister);
+
+     /**
+   * @openapi
+   * /api/cashRegister/withdrawals:
+   *  get:
+   *     tags:
+   *     - CashRegister
+   *     summary: Get all withdrawals
+   *     security: 
+   *      - bearerAuth: []
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/WithdrawalInfo'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+    */
+     app.get("/api/cashRegister/withdrawals", authRequired, getAllWithDrawals);
 
      /**
    * @openapi
@@ -307,7 +376,7 @@ export default (app: Express): void => {
    *              $ref: '#/components/schemas/BadRequest' 
    */
     app.put("/api/cashRegister/:id", authRequired, validateUUID, validate(closeTurnSchema), closeTurnForCashRegister);
-
+    
       /**
    * @openapi
    * /api/cashRegister/turn/{id}:
@@ -346,7 +415,39 @@ export default (app: Express): void => {
    */
     app.post("/api/cashRegister/turn/:id", authRequired, validateUUID, validate(createWithdrawalSchema), saveWithdrawal);
 
-      /**
+  /**
+   * @openapi
+   * /api/cashRegister/{id}/withdrawals:
+   *  get:
+   *     tags:
+   *     - CashRegister
+   *     summary: Get all withdrawals associated with a Cash Register
+   *     parameters:
+   *      - in: path
+   *        name: id
+   *        required: true
+   *        description: cash register id
+   *        schema:
+   *          type: string
+   *     security: 
+   *      - bearerAuth: []
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/AllWithdrawalInfoResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+    */
+    app.get("/api/cashRegister/:id/withdrawals", authRequired, validateUUID, getAllCashRegisterWithdrawals);
+
+  /**
    * @openapi
    * /api/cashRegister/turn/sales/{id}:
    *  get:
@@ -377,6 +478,70 @@ export default (app: Express): void => {
    *              $ref: '#/components/schemas/BadRequest' 
    */
     app.get("/api/cashRegister/turn/sales/:id", authRequired, getAllSalesByTurn);
+
+    /**
+   * @openapi
+   * /api/cashRegister/turn/withdrawal/{id}:
+   *  get:
+   *     tags:
+   *     - CashRegister
+   *     summary: Get all withdrawals associated with a turn
+   *     parameters:
+   *      - in: path
+   *        name: id
+   *        required: true
+   *        description: turn id
+   *        schema:
+   *          type: string
+   *     security: 
+   *      - bearerAuth: []
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/AllWithdrawalInfoResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+      */
+    app.get("/api/cashRegister/turn/withdrawal/:id", authRequired, validateUUID, getWithdrawalsByTurn);
+
+     /**
+   * @openapi
+   * /api/cashRegister/turn/{id}:
+   *  get:
+   *     tags:
+   *     - CashRegister
+   *     summary: Get turn info by id
+   *     parameters:
+   *      - in: path
+   *        name: id
+   *        required: true
+   *        description: turn id
+   *        schema:
+   *          type: string
+   *     security: 
+   *      - bearerAuth: []
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/TurnResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+      */
+    app.get("/api/cashRegister/turn/:id", authRequired, getTurnInfoById);
 
     /**
    * @openapi
