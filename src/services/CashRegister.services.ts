@@ -2,6 +2,7 @@ import { CashRegister, CashRegisterTurn, CashRegisterTurns, CreateCashRegister, 
 import {prisma } from "../helpers/Prisma";
 import { CreateWithdrawal, Withdrawal } from "../interfaces/Withdrawal";
 import { Sale } from "../interfaces/Sale";
+import { CreateImbalanceLog, ImbalanceLog } from "interfaces/ImbalanceLog";
 
 const QUERY_FOR_CASH_REGISTER_WITH_TURNS = {
     id: true,
@@ -179,6 +180,21 @@ export const closeTurn = async (cashRegisterId: string, turn: UpdateTurn): Promi
     return cashRegister;
 }
 
+export const registerImbalance = async (id_turn: string, imbalanceLog: CreateImbalanceLog): Promise<ImbalanceLog> => {
+    const imbalanceLogSaved = await prisma.imbalance_Log.create({
+        data: {
+            value: imbalanceLog.value as number,
+            description: imbalanceLog.description,
+            turn: {
+                connect: {
+                    id: id_turn
+                }
+            }
+        }
+    });
+    return imbalanceLogSaved;
+}
+
 export const createWithdrawal = async (turnId: string, withdrawal: CreateWithdrawal): Promise<Withdrawal> => {
     const withdrawalSaved: Withdrawal = await prisma.withdrawal.create({
         data: {
@@ -264,6 +280,33 @@ export const deleteTurn = async (id: string): Promise<void> => {
             id_cash_register: id
         },
     });
+}
+
+export const getWithdrawalsByTurnId = async (id: string): Promise<Withdrawal[]> => {
+    const withdrawals: Withdrawal[] = await prisma.withdrawal.findMany({
+        where: {
+            id_turn: id
+        }
+    });
+    return withdrawals;   
+}
+
+export const getWithdrawalsByCashRegisterId = async (id: string): Promise<Withdrawal[]> => {
+    let withdrawals: any[] = await prisma.turn.findMany({
+        where: {
+            id_cash_register: id
+        },
+        select: {
+            withdrawals: true
+        }
+    });
+    withdrawals = withdrawals.map((withdrawal) => withdrawal.withdrawals).flat(); 
+    return withdrawals;  
+}
+
+export const getAllWithdrawals = async (): Promise<Withdrawal[]> => {
+    const withdrawals: Withdrawal[] = await prisma.withdrawal.findMany();
+    return withdrawals;   
 }
 
 export const deleteWithdrawal = async (id: string): Promise<void> => {
