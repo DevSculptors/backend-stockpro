@@ -1,4 +1,4 @@
-import { chartData } from "../helpers/Utils";
+import { chartData, weekday } from "../helpers/Utils";
 import {prisma } from "../helpers/Prisma";
 
 import { CreateSale, ValueOfDay, ReportByMonth, Sale, SaleWithPersonData, SaleWithPersonDataOptional } from "../interfaces/Sale";
@@ -170,44 +170,38 @@ export const getTopClientSale = async (topNumber: number): Promise<SaleWithPerso
     });
     return topSales;
 }
-// to do
-export const getTopProducts = async (topNumber: number): Promise<any> => {
-    const topProducts:any[] = await prisma.order_Sale.findMany({
-        // skip: 0,
-        // take: topNumber,
-        include: {
+
+export const getTopNCategories = async (topNumber: number): Promise<any> => {
+    let topProducts:any[] = await prisma.order_Sale.findMany({
+        select: {
             product: {
-                include:{
-                    category: true
+                select: {
+                    name_product: true,
+                    category: { 
+                        select: {
+                            name: true
+                        }
+                    }
                 }
-            }
-        }
+            },
+            amount_product: true,
+        },
     });
-    /**
-     * achiras:83, Bimbojaldres Croissandwich: 3, ponque: 1
-     * agua: 2 
-     * avena original: 1, alpin: 1, avena canela: 10
-     * acondicionador liso: 13, acondicionador risos: 1
-     * 
-     * 
-     */
-    type CategoryCount = Record<any, number>;
-    let arrCategoryCount:CategoryCount[] = [];
-    topProducts.forEach((value: any) => {
-        let categoryCount:CategoryCount = {
-            id: value.product.category.id,
-            name: value.product.category.name,
-            count: 0
-        }
-        let index = arrCategoryCount.findIndex((item: CategoryCount) => item.id === categoryCount.id);
-        if (index > -1) {
-            arrCategoryCount[index].count += value.amount_product;
+    topProducts = topProducts.reduce((acc: any, product: any) => {
+        const found = acc.find((item: any) => item.category === product.product.category.name);
+        if(found){
+            found.amount += product.amount_product;
         }else{
-            arrCategoryCount.push(categoryCount);
+            let newProduct = {
+                category: product.product.category.name,
+                amount: product.amount_product,
+            }
+            acc.push(newProduct);
         }
-    });
-    // console.log(arrCategoryCount);
-    return arrCategoryCount;
+        return acc;
+    }, []);
+    topProducts.sort((a: any, b: any) => b.amount - a.amount);
+    return topProducts.slice(0,topNumber);
 }
 
 export const getTotalSalesByMonth = async (): Promise<ReportByMonth> => {
@@ -262,8 +256,83 @@ export const getTotalRevenueByMonth = async (): Promise<ReportByMonth> => {
         incomeOfDay.value = Number(incomeOfDay.value) + Number(sale.price_sale)
         chartData[dayNumber] = incomeOfDay;
     });
-    const reportByMonth: ReportByMonth = { total: totalRevenue._sum.price_sale, chartData};
+    const reportByMonth: ReportByMonth = { total: totalRevenue?._sum?.price_sale || 0, chartData};
     return reportByMonth;
+}
+
+export const getTopCategoriesByWeekService = async (topNumber: number): Promise<any> => {
+    const currentDate = new Date();
+    let sundayDate = new Date(currentDate)
+    sundayDate.setDate(currentDate.getDate() - currentDate.getUTCDay());
+    sundayDate.setDate(sundayDate.getDate() - 7);
+    sundayDate.setHours(0,0,0,0);
+    let saturdayDate = new Date(currentDate);
+    saturdayDate.setDate(currentDate.getDate() - currentDate.getUTCDay());
+    saturdayDate.setDate(saturdayDate.getDate() - 1);
+    saturdayDate.setHours(0,0,0,0);
+    let topProducts:any[] = await prisma.order_Sale.findMany({
+        select: {
+            product: {
+                select: {
+                    category: { 
+                        select: {
+                            name: true
+                        }
+                    },
+                }
+            },
+            sale: {
+                select: {
+                    date_sale: true,
+                }
+            },
+            amount_product: true,
+        },
+        where: {    
+            sale: {
+                date_sale: {
+                    gte: sundayDate,
+                    lt: saturdayDate,
+                }
+            }
+        }
+    });
+    type CategoryAmount = {category: string, amount: number};
+    type ValuesOfDay = {day: string, values: CategoryAmount[]};
+    const data: ValuesOfDay[] = weekday.map((day) => {
+        return {
+            day: day,
+            values: []
+        }
+    });
+    topProducts = topProducts.reduce((acc: any, product: any) => {
+        const found = acc.find((item: any) => item.category === product.product.category.name);
+        if(found){
+            found.amount += product.amount_product;
+        }else{
+            let newProduct = {
+                category: product.product.category.name,
+                amount: product.amount_product,
+                date: product.sale.date_sale,
+            }
+            acc.push(newProduct);
+        }
+        return acc;
+    }, []);
+    topProducts.sort((a: any, b: any) => b.amount - a.amount);
+    topProducts = topProducts.slice(0,topNumber);
+    topProducts.forEach((product: any) => {
+        const date:Date = new Date(product.date);
+        const dayNumber:number = date.getUTCDay();
+        let valuesOfDay:ValuesOfDay = data[dayNumber];
+        const CategoryAmount:CategoryAmount = {
+            category: product.category,
+            amount: product.amount,
+        }
+        valuesOfDay.values.push(CategoryAmount);
+        data[dayNumber] = valuesOfDay;
+    });
+    return data;
 }
 
 export const getTotalProductsByMonth = async (): Promise<ReportByMonth> => {

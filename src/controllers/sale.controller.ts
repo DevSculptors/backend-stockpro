@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { createSale, deleteSale, getBestClientOfTheMonth, getSaleById, getSales, getSalesBetween, getTopClientSale, getTopProducts, getTotalProductsByMonth, getTotalRevenueByMonth, getTotalSalesByMonth } from "../services/sale.services";
+import { createSale, deleteSale, getBestClientOfTheMonth, getSaleById, getSales, getSalesBetween, getTopCategoriesByWeekService, getTopClientSale, getTopNCategories, getTotalProductsByMonth, getTotalRevenueByMonth, getTotalSalesByMonth } from "../services/sale.services";
 import { CreateSale, ValueOfDay, ReportByMonth, Sale, SaleWithPersonData, SaleWithPersonDataOptional } from "../interfaces/Sale";
 import { chartData, validateUUID } from "../helpers/Utils";
 import { getStockPriceProduct, modifyProduct } from "../services/product.services";
@@ -142,11 +142,22 @@ export const getTopSales = async (req: Request, res: Response): Promise<Response
     }
 }
 
-/** to do.. */
+
 export const getTopCategories = async (req: Request, res: Response): Promise<Response> => {
     try {
         const limit = Number(req.query.top) || 10;
-        const topCategories: any = await getTopProducts(limit);
+        const topCategories: any = await getTopNCategories(limit);
+        return res.status(200).json(topCategories);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTopCategoriesByWeek = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const limit = Number(req.query.top) || 3;
+        const topCategories: any = await getTopCategoriesByWeekService(limit);
         return res.status(200).json(topCategories);
     } catch (error) {
         console.log(error);

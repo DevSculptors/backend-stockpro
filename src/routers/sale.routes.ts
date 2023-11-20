@@ -1,6 +1,6 @@
 import { Express } from "express";
 
-import { deleteSaleById, getAllSales, getInfoSaleById, getSalesReportByWeek, getTopCategories, getTopSales, getTotalClients, getTotalProducts, getTotalRevenue, getTotalSales, registerSale } from "../controllers/sale.controller";
+import { deleteSaleById, getAllSales, getInfoSaleById, getSalesReportByWeek, getTopCategories, getTopCategoriesByWeek, getTopSales, getTotalClients, getTotalProducts, getTotalRevenue, getTotalSales, registerSale } from "../controllers/sale.controller";
 import { createSaleSchema } from "../schemas/saleRequests.schema";
 import validate from "../middlewares/ValidateSchema";
 import { authRequired } from "../middlewares/ValidateToken";
@@ -31,6 +31,30 @@ export default (app: Express): void => {
 *       type: array
 *       items:
 *           $ref: '#components/schemas/topSales'
+*    topCategories:
+*       type: object
+*       required:
+*           - category
+*           - amount
+*       example:
+*           category: string
+*           amount: number
+*    topCategoriesResponse:
+*       type: array
+*       items:
+*           $ref: '#components/schemas/topCategories'
+*    CategoriesOfDay:
+*       type: object
+*       required:
+*           - day
+*           - value
+*       example:
+*           day: string
+*           value: [{category: string, amount: number}]
+*    CategoriesOfDayResponse:
+*       type: array
+*       items:
+*           $ref: '#components/schemas/CategoriesOfDay'
 *    SalesByWeek:
 *       type: object
 *       required:
@@ -199,7 +223,71 @@ export default (app: Express): void => {
    */
     app.get("/api/sales/topSales", getTopSales);
 
+    /**
+   * @openapi
+   * /api/sales/topCategories:
+   *  get:
+   *     tags:
+   *     - Report
+   *     summary: get top categories (default return 10)
+   *     security: 
+   *      - bearerAuth: []
+   *     parameters:
+   *      - in: query
+   *        name: top 
+   *        required: false
+   *        description: top number of categories (optional)
+   *        schema:
+   *        type: number
+   *        format: int
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+  *               $ref: '#/components/schemas/topCategoriesResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
     app.get("/api/sales/topCategories", getTopCategories);
+
+    /**
+   * @openapi
+   * /api/sales/topCategoriesByWeek:
+   *  get:
+   *     tags:
+   *     - Report
+   *     summary: Get top categories with number of products purchased last week by day of week (default return of 10 categories)
+   *     security: 
+   *      - bearerAuth: []
+   *     parameters:
+   *      - in: query
+   *        name: top 
+   *        required: false
+   *        description: top number of categories (optional)
+   *        schema:
+   *        type: number
+   *        format: int
+   *     responses:
+   *       200:
+   *        description: success
+   *        content:
+   *          application/json:
+   *            schema:
+  *               $ref: '#/components/schemas/CategoriesOfDayResponse'  
+   *       400:
+   *        description: Bad request
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: '#/components/schemas/BadRequest' 
+   */
+    app.get("/api/sales/topCategoriesByWeek", getTopCategoriesByWeek)
 
   /**
    * @openapi
