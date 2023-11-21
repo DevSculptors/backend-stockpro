@@ -179,6 +179,8 @@ export const getTopClientSale = async (topNumber: number): Promise<SaleWithPerso
         }
         return acc;
     }, []);
+    topSales.sort((a: SaleWithPersonData, b: SaleWithPersonData) => Number(b.price_sale) - Number(a.price_sale));
+    topSales = topSales.slice(0,topNumber);
     return topSales;
 }
 
