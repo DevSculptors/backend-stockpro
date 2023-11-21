@@ -337,7 +337,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.post("/api/cashRegister/:id", authRequired, validateUUID, validate(createTurnSchema),openTurnForCashRegister);
+    app.post("/api/cashRegister/:id", validateUUID, validate(createTurnSchema), openTurnForCashRegister);
 
       /**
    * @openapi
@@ -375,7 +375,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.put("/api/cashRegister/:id", authRequired, validateUUID, validate(closeTurnSchema), closeTurnForCashRegister);
+    app.put("/api/cashRegister/:id", validateUUID, validate(closeTurnSchema), closeTurnForCashRegister);
     
       /**
    * @openapi
@@ -413,7 +413,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.post("/api/cashRegister/turn/:id", authRequired, validateUUID, validate(createWithdrawalSchema), saveWithdrawal);
+    app.post("/api/cashRegister/turn/:id", validateUUID, validate(createWithdrawalSchema), saveWithdrawal);
 
   /**
    * @openapi
@@ -445,7 +445,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
     */
-    app.get("/api/cashRegister/:id/withdrawals", authRequired, validateUUID, getAllCashRegisterWithdrawals);
+    app.get("/api/cashRegister/:id/withdrawals", validateUUID, getAllCashRegisterWithdrawals);
 
   /**
    * @openapi
@@ -477,7 +477,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
    */
-    app.get("/api/cashRegister/turn/sales/:id", authRequired, getAllSalesByTurn);
+    app.get("/api/cashRegister/turn/sales/:id", getAllSalesByTurn);
 
     /**
    * @openapi
@@ -509,7 +509,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
       */
-    app.get("/api/cashRegister/turn/withdrawal/:id", authRequired, validateUUID, getWithdrawalsByTurn);
+    app.get("/api/cashRegister/turn/withdrawal/:id", validateUUID, getWithdrawalsByTurn);
 
      /**
    * @openapi
@@ -541,7 +541,7 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/BadRequest' 
       */
-    app.get("/api/cashRegister/turn/:id", authRequired, getTurnInfoById);
+    app.get("/api/cashRegister/turn/:id", getTurnInfoById);
 
     /**
    * @openapi
@@ -575,5 +575,5 @@ export default (app: Express): void => {
    *            schema:
    *              $ref: '#/components/schemas/NotFound' 
    */
-    app.delete("/api/cashRegister/:id", authRequired, validateUUID, deleteCashRegister);
+    app.delete("/api/cashRegister/:id", validateUUID, deleteCashRegister);
 }

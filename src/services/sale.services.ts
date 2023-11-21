@@ -151,12 +151,13 @@ export const getSalesBetween = async (sundayDate: Date, saturdayDate: Date): Pro
 }
 
 export const getTopClientSale = async (topNumber: number): Promise<SaleWithPersonDataOptional[]> => {
-    const topSales:SaleWithPersonDataOptional[] = await prisma.sale.findMany({
-        skip: 0,
-        take: topNumber,
+    let topSales:SaleWithPersonDataOptional[] = await prisma.sale.findMany({
+        // skip: 0,
+        // take: topNumber,
         select: {
             person: {
                 select: {
+                    id: true,
                     name: true,
                     last_name: true,
                     phone: true,
@@ -168,6 +169,16 @@ export const getTopClientSale = async (topNumber: number): Promise<SaleWithPerso
             price_sale: 'desc'
         },
     });
+    topSales = topSales.reduce((acc: SaleWithPersonData[], sale: SaleWithPersonData) => {
+        const found = acc.find((item: SaleWithPersonData) => item.person.id === sale.person.id);
+        if(found){
+            found.price_sale = Number(found.price_sale) + Number(sale.price_sale);
+        }else{
+            sale.price_sale = Number(sale.price_sale);
+            acc.push(sale);
+        }
+        return acc;
+    }, []);
     return topSales;
 }
 
