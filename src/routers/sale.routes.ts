@@ -262,7 +262,7 @@ export default (app: Express): void => {
    *  get:
    *     tags:
    *     - Report
-   *     summary: Get top categories with number of products purchased last week by day of week (default return of 10 categories)
+   *     summary: Get top categories with number of products purchased last week by day of week (default return 4 categories)
    *     security: 
    *      - bearerAuth: []
    *     parameters:
