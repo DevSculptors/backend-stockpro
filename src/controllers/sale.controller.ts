@@ -97,23 +97,7 @@ export const getSalesReportByWeek = async (req: Request, res: Response): Promise
     try {
         const sunday:string = req.query.sundayDate as string;
         const saturday:string = req.query.saturdayDate as string;
-        let sundayDate:Date;
-        let saturdayDate:Date;
-        if (!sunday && !saturday) {
-            const currentdate: Date = new Date();
-            sundayDate = new Date(currentdate)
-            sundayDate.setDate(currentdate.getDate() - currentdate.getUTCDay());
-            sundayDate.setDate(sundayDate.getDate() - 7);
-            sundayDate.setHours(0,0,0,0);
-            saturdayDate = new Date(currentdate);
-            saturdayDate.setDate(currentdate.getDate() - currentdate.getUTCDay());
-            saturdayDate.setDate(saturdayDate.getDate() - 1);
-            saturdayDate.setHours(0,0,0,0);
-        }else{
-            sundayDate = new Date(sunday);
-            saturdayDate = new Date(saturday);
-        }
-        const sales: Sale[] = await getSalesBetween(sundayDate, saturdayDate);
+        const sales: Sale[] = await getSalesBetween(sunday, saturday);
         chartData.forEach((item: ValueOfDay) => {
             item.value = 0;
         });
@@ -156,8 +140,11 @@ export const getTopCategories = async (req: Request, res: Response): Promise<Res
 
 export const getTopCategoriesByWeek = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const limit = Number(req.query.top) || 3;
+        const limit = Number(req.query.top) || 4;
         const topCategories: any = await getTopCategoriesByWeekService(limit);
+        topCategories.forEach((category: any) => {
+            category.values.sort((a: any, b: any) => a.category.toUpperCase() > b.category.toUpperCase() ? 1 : -1);
+        });
         return res.status(200).json(topCategories);
     } catch (error) {
         console.log(error);

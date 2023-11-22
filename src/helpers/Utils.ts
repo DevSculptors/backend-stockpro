@@ -72,3 +72,32 @@ export const chartData: ValueOfDay[] = weekday.map((day) => {
       value: 0
   }
 });
+
+export const getLastSundaySaturdayDates = () => {
+  const currentDate = new Date();
+  let sundayDate = new Date(currentDate)
+  sundayDate.setDate(currentDate.getDate() - currentDate.getUTCDay());
+  sundayDate.setDate(sundayDate.getDate() - 7);
+  sundayDate.setUTCHours(0,0,0,0);
+  let saturdayDate = new Date(currentDate);
+  saturdayDate.setDate(currentDate.getDate() - currentDate.getUTCDay());
+  saturdayDate.setDate(saturdayDate.getDate() - 1);
+  saturdayDate.setUTCHours(0,0,0,0);
+  return {sundayDate, saturdayDate};
+}
+
+export type CategoryAmount = {category: string, amount: number};
+
+export type ValuesOfDay = {day: string, values: CategoryAmount[]};
+
+export type CategoriesPerDay = ValuesOfDay[];
+
+export const fillCategoriesPerDay = () => {
+  const categoriesPerDay: CategoriesPerDay = weekday.map((day) => {
+    return {
+        day: day,
+        values: []
+    }
+  });
+  return categoriesPerDay;
+}
