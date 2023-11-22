@@ -1,8 +1,7 @@
-import { chartData, weekday } from "../helpers/Utils";
+import { ValuesOfDay, CategoriesPerDay, chartData, getLastSundaySaturdayDates, weekday, CategoryAmount, fillCategoriesPerDay } from "../helpers/Utils";
 import {prisma } from "../helpers/Prisma";
 
 import { CreateSale, ValueOfDay, ReportByMonth, Sale, SaleWithPersonData, SaleWithPersonDataOptional } from "../interfaces/Sale";
-import { Person, UpdatePerson } from "../interfaces/Person";
 
 const QUERY_FOR_ALL_FIELDS = {
     id: true,
@@ -128,7 +127,16 @@ export const deleteOderSales = async (id: string): Promise<any> => {
     return orders.count;
 }
 
-export const getSalesBetween = async (sundayDate: Date, saturdayDate: Date): Promise<any> => {
+export const getSalesBetween = async (sundayDateString: string, saturdayDateString: string): Promise<any> => {
+    let sundayDate:Date, saturdayDate:Date;
+    if(!sundayDateString || !saturdayDateString){
+        let dates = getLastSundaySaturdayDates();
+        sundayDate = dates.sundayDate;
+        saturdayDate = dates.saturdayDate;
+    }else{
+        sundayDate = new Date(sundayDateString);
+        saturdayDate = new Date(saturdayDateString);
+    }
     const sales = await prisma.sale.findMany({
         where: {
             date_sale: {
@@ -228,7 +236,7 @@ export const getTotalSalesByMonth = async (): Promise<ReportByMonth> => {
             }
         }
     });
-    const sales: Sale[] = await getSalesBetween(firstDayOfMonth, currentDate);
+    const sales: Sale[] = await getSalesBetween(firstDayOfMonth.toISOString(), currentDate.toISOString());
     chartData.forEach((item: ValueOfDay) => {
         item.value = 0;
     });
@@ -258,7 +266,7 @@ export const getTotalRevenueByMonth = async (): Promise<ReportByMonth> => {
             price_sale: true
         }
     });
-    const sales: Sale[] = await getSalesBetween(firstDayOfMonth, currentDate);
+    const sales: Sale[] = await getSalesBetween(firstDayOfMonth.toISOString(), currentDate.toISOString());
     chartData.forEach((item: ValueOfDay) => {
         item.value = 0;
     });
@@ -274,15 +282,7 @@ export const getTotalRevenueByMonth = async (): Promise<ReportByMonth> => {
 }
 
 export const getTopCategoriesByWeekService = async (topNumber: number): Promise<any> => {
-    const currentDate = new Date();
-    let sundayDate = new Date(currentDate)
-    sundayDate.setDate(currentDate.getDate() - currentDate.getUTCDay());
-    sundayDate.setDate(sundayDate.getDate() - 7);
-    sundayDate.setHours(0,0,0,0);
-    let saturdayDate = new Date(currentDate);
-    saturdayDate.setDate(currentDate.getDate() - currentDate.getUTCDay());
-    saturdayDate.setDate(saturdayDate.getDate() - 1);
-    saturdayDate.setHours(0,0,0,0);
+    const { sundayDate, saturdayDate } = getLastSundaySaturdayDates();
     let topProducts:any[] = await prisma.order_Sale.findMany({
         select: {
             product: {
@@ -305,17 +305,9 @@ export const getTopCategoriesByWeekService = async (topNumber: number): Promise<
             sale: {
                 date_sale: {
                     gte: sundayDate,
-                    lt: saturdayDate,
+                    lte: saturdayDate,
                 }
             }
-        }
-    });
-    type CategoryAmount = {category: string, amount: number};
-    type ValuesOfDay = {day: string, values: CategoryAmount[]};
-    const data: ValuesOfDay[] = weekday.map((day) => {
-        return {
-            day: day,
-            values: []
         }
     });
     topProducts = topProducts.reduce((acc: any, product: any) => {
@@ -323,35 +315,50 @@ export const getTopCategoriesByWeekService = async (topNumber: number): Promise<
         if(found){
             found.amount += product.amount_product;
         }else{
-            let newProduct = {
+            let newItem = {
                 category: product.product.category.name,
                 amount: product.amount_product,
                 date: product.sale.date_sale,
             }
-            acc.push(newProduct);
+            acc.push(newItem);
         }
         return acc;
     }, []);
     topProducts.sort((a: any, b: any) => b.amount - a.amount);
     topProducts = topProducts.slice(0,topNumber);
+    const categories:Set<string> = new Set();
+    const categoriesPerDay: CategoriesPerDay = fillCategoriesPerDay(); 
     topProducts.forEach((product: any) => {
         const date:Date = new Date(product.date);
         const dayNumber:number = date.getUTCDay();
-        let valuesOfDay:ValuesOfDay = data[dayNumber];
-        const CategoryAmount:CategoryAmount = {
+        let valuesOfDay:ValuesOfDay = categoriesPerDay[dayNumber];
+        const categoryAmount:CategoryAmount = {
             category: product.category,
             amount: product.amount,
         }
-        valuesOfDay.values.push(CategoryAmount);
-        data[dayNumber] = valuesOfDay;
+        valuesOfDay.values.push(categoryAmount);
+        categoriesPerDay[dayNumber] = valuesOfDay;
+        categories.add(product.category);
     });
-    return data;
+    categories.forEach((category: string) => {
+        categoriesPerDay.forEach((item: ValuesOfDay) => {
+            const found = item.values.find((value: CategoryAmount) => value.category === category);
+            if(!found){
+                const CategoryAmount:CategoryAmount = {
+                    category: category,
+                    amount: 0,
+                }
+                item.values.push(CategoryAmount);
+            }
+        });
+    });
+    return categoriesPerDay;
 }
 
 export const getTotalProductsByMonth = async (): Promise<ReportByMonth> => {
     const currentDate = new Date();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const sales: Sale[] = await getSalesBetween(firstDayOfMonth, currentDate);
+    const sales: Sale[] = await getSalesBetween(firstDayOfMonth.toISOString(), currentDate.toISOString());
     chartData.forEach((item: ValueOfDay) => {
         item.value = 0;
     });
@@ -371,7 +378,7 @@ export const getTotalProductsByMonth = async (): Promise<ReportByMonth> => {
 export const getBestClientOfTheMonth = async (): Promise<any> => {
     const currentDate = new Date();
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-    const sales: Sale[] = await getSalesBetween(firstDayOfMonth, currentDate);
+    const sales: Sale[] = await getSalesBetween(firstDayOfMonth.toISOString(), currentDate.toISOString());
     type ClientVisits = {id:string, count:number};
     let clientsVisits:ClientVisits[] = []
     sales.forEach((sale: any) => {
