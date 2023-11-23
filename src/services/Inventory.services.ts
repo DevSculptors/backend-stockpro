@@ -24,6 +24,7 @@ const QUERY_FOR_ALL_FIELDS = {
             quantity: true,
             due_date: true,
             purchase_unit_price: true,
+            sale_unit_price: true,
             product: {
                 select: {
                     id: true,
@@ -113,6 +114,7 @@ export const createInventoryPurchase = async (inventoryPurchase: createdInventor
                         quantity: product.quantity,
                         due_date: product.due_date,
                         purchase_unit_price: product.purchase_unit_price,
+                        sale_unit_price: product.sale_unit_price,
                         product: {
                             connect: {
                                 id: product.product_id
@@ -130,7 +132,7 @@ export const createInventoryPurchase = async (inventoryPurchase: createdInventor
 export const recordSaleInLog = async (product: any, id: string): Promise<any> => {
     const saleLog: any = await prisma.sale_Record.createMany({
         data: {
-            sale_price: product.purchase_unit_price,
+            sale_price: product.sale_unit_price,
             update_date: new Date(),
             id_product: product.product_id,
             id_purchase: id

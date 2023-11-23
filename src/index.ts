@@ -16,12 +16,16 @@ dotenv.config();
 
 const allowedOrigins = [process.env.FRONTEND_DEPLOY_URL, process.env.FRONTEND_URL];
 
+console.log(allowedOrigins);
+
 app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
   })
 );
+
+
 
 app.use(morgan("dev"));
 app.use(compression());

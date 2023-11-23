@@ -1,13 +1,20 @@
 import { Request, Response } from "express";
 
-import { createSale, deleteSale, getSaleById, getSales } from "../services/sale.services";
-import { CreateSale, Sale, SaleWithPersonData } from "../interfaces/Sale";
-import { validateUUID } from "../helpers/Utils";
+import { createSale, deleteSale, getBestClientOfTheMonth, getSaleById, getSales, getSalesBetween, getTopCategoriesByWeekService, getTopClientSale, getTopNCategories, getTotalProductsByMonth, getTotalRevenueByMonth, getTotalSalesByMonth } from "../services/sale.services";
+import { CreateSale, ValueOfDay, ReportByMonth, Sale, SaleWithPersonData, SaleWithPersonDataOptional } from "../interfaces/Sale";
+import { chartData, validateUUID } from "../helpers/Utils";
 import { getStockPriceProduct, modifyProduct } from "../services/product.services";
+import { Product } from "../interfaces/Product";
+import { getClients } from "../services/person.services";
+import { Person } from "../interfaces/Person";
 
 export const getAllSales = async (req: Request, res: Response): Promise<Response> => {
     try {
         const sales: SaleWithPersonData[] = await getSales();
+        sales.forEach((sale) => {
+            sale.turn.user.roleUser = sale.turn.user.role.name;
+            delete sale.turn.user.role;
+        });
         return res.status(200).json(sales);
     } catch (error) {
         console.log(error);
@@ -21,8 +28,8 @@ export const getInfoSaleById = async (req: Request, res: Response): Promise<Resp
         if (!validateUUID(id)) return res.status(400).json({message: "Invalid id"});
         const sale: SaleWithPersonData = await getSaleById(id);
         if (!sale) return res.status(404).json({message: "Sale not found"});
-        sale.user.roleUser = sale.user.role.name;
-        delete sale.user.role;
+        sale.turn.user.roleUser = sale.turn.user.role.name;
+        delete sale.turn.user.role;
         return res.status(200).json(sale);
     } catch (error) {
         console.log(error);
@@ -32,19 +39,19 @@ export const getInfoSaleById = async (req: Request, res: Response): Promise<Resp
 
 export const registerSale = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const { price_sale, id_client, id_user, products } = req.body;
+        const { price_sale, id_client, id_user, products,id_turn } = req.body;
         let isValid = await validateProducts(req);
         if (!isValid[0]) return res.status(400).json({message: isValid[1]});
         products.forEach(async (product: any) => {
-            const productDetail = await getStockPriceProduct(product.id);
+            const productDetail: Partial<Product> = await getStockPriceProduct(product.id);
             await modifyProduct(product.id, {stock: productDetail.stock-product.amount_product});
         });
         const sale: CreateSale = {
-            date_sale: new Date(), price_sale, id_client, id_user, products
+            date_sale: new Date(), price_sale, id_client, id_user, id_turn,products
         }
         const newSale: SaleWithPersonData = await createSale(sale);
-        newSale.user.roleUser = newSale.user.role.name;
-        delete newSale.user.role;
+        newSale.turn.user.roleUser = newSale.turn.user.role.name;
+        delete newSale.turn.user.role;
         return res.status(201).json(newSale);
     } catch (error) {
         console.log(error);
@@ -85,3 +92,105 @@ export const deleteSaleById = async (req: Request, res: Response): Promise<Respo
         return res.status(500).json({message: error.message});
     }
 }
+
+export const getSalesReportByWeek = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const sunday:string = req.query.sundayDate as string;
+        const saturday:string = req.query.saturdayDate as string;
+        const sales: Sale[] = await getSalesBetween(sunday, saturday);
+        chartData.forEach((item: ValueOfDay) => {
+            item.value = 0;
+        });
+        sales.forEach((sale: Sale) => {
+            const date:Date = new Date(sale.date_sale);
+            const dayNumber:number = date.getUTCDay();
+            let incomeOfDay:ValueOfDay = chartData[dayNumber];
+            incomeOfDay.value = Number(incomeOfDay.value) + Number(sale.price_sale)
+            chartData[dayNumber] = incomeOfDay;
+        });
+        return res.status(200).json(chartData);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTopSales = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const limit = Number(req.query.top) || 10;
+        const topSales: SaleWithPersonDataOptional[] = await getTopClientSale(limit);
+        return res.status(200).json(topSales);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+
+export const getTopCategories = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const limit = Number(req.query.top) || 10;
+        const topCategories: any = await getTopNCategories(limit);
+        return res.status(200).json(topCategories);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTopCategoriesByWeek = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const limit = Number(req.query.top) || 4;
+        const topCategories: any = await getTopCategoriesByWeekService(limit);
+        topCategories.forEach((category: any) => {
+            category.values.sort((a: any, b: any) => a.category.toUpperCase() > b.category.toUpperCase() ? 1 : -1);
+        });
+        return res.status(200).json(topCategories);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTotalSales = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const totalSales: ReportByMonth = await getTotalSalesByMonth();
+        return res.status(200).json(totalSales);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTotalRevenue = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const totalSales: ReportByMonth = await getTotalRevenueByMonth();
+        return res.status(200).json(totalSales);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTotalProducts = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const totalProducts: ReportByMonth = await getTotalProductsByMonth();
+        return res.status(200).json({total: totalProducts});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+
+export const getTotalClients = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const clientsList: Person[] = await getClients(0, 0);
+        const bestClient: any = await getBestClientOfTheMonth();
+        const client: Person = clientsList.find((client) => client.id == bestClient.id) as Person;
+        return res.status(200).json({totalRegisteredClients: clientsList.length, client: client});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({message: error.message});
+    }
+}
+

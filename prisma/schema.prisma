@@ -42,7 +42,6 @@ model User{
   role Role @relation(fields: [id_role], references: [id])
   id_role String @db.Uuid
   turns Turn[]
-  sales Sale[]
   inventory_purchases Inventory_Purchase[]
 }
 
@@ -55,14 +54,26 @@ model Role{
 
 model Turn {
   id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  date_time DateTime
-  cash Decimal
-  is_open Boolean
+  date_time_start DateTime
+  base_cash Decimal
+  date_time_end DateTime?
+  final_cash Decimal?
+  is_active Boolean @default(true)
   withdrawals Withdrawal[]
   user User @relation(fields: [id_user], references: [id])
   id_user String @db.Uuid
   cash_register Cash_Register @relation(fields: [id_cash_register], references: [id])
   id_cash_register String @db.Uuid
+  sales Sale[]
+  imbalance_logs Imbalance_Log[]
+}
+
+model Imbalance_Log {
+  id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  value Decimal
+  description String
+  turn Turn @relation(fields: [id_turn], references: [id])
+  id_turn String @db.Uuid
 }
 
 model Withdrawal{
@@ -75,7 +86,7 @@ model Withdrawal{
 
 model Cash_Register{
   id String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name String @db.Uuid
+  name String
   location String
   turns Turn[]
 }
@@ -86,9 +97,9 @@ model Sale{
   price_sale Decimal
   person Person @relation(fields: [id_client], references: [id])
   id_client String @db.Uuid
-  user User @relation(fields: [id_user], references: [id])
-  id_user String @db.Uuid
   oders Order_Sale []
+  turn Turn @relation(fields: [id_turn], references: [id])
+  id_turn String @db.Uuid
 }
 
 model Product{
@@ -142,6 +153,7 @@ model Purchase_Detail{
   quantity Int
   due_date DateTime
   purchase_unit_price Decimal
+  sale_unit_price Decimal?
   inventory_purchase Inventory_Purchase @relation(fields: [id_purchase], references: [id])
   id_purchase String @db.Uuid
   product Product @relation(fields: [id_product], references: [id])

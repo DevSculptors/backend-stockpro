@@ -9,8 +9,8 @@ export const getPersonsController = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+    const page = Number(req.query.page) || 0;
+    const limit = Number(req.query.limit) || 0;
     const persons: Person[] = await getPersons(calculateSkip(page, limit), limit);
     return res.status(200).json(persons);
   } catch (err) {

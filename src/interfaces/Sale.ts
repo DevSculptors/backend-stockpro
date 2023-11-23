@@ -1,6 +1,6 @@
 import { Person } from "./Person";
 import { Product } from "./Product";
-import { UserWithPersonData } from "./User";
+import { User, UserWithPersonData } from "./User";
 
 export interface Sale {
     id: string;
@@ -8,10 +8,13 @@ export interface Sale {
     price_sale: unknown;
 }
 
+export type ValueOfDay = { day: string,value: number }
+
 export type CreateSale = Omit<Sale, "id" | "price_sale"> &{
     price_sale: number;
     id_client: string;
     id_user: string;
+    id_turn: string;
     products: Partial<Product>[];
 };
 
@@ -29,5 +32,20 @@ export type CreateOrderSale = Omit<OrderSale, "id" | "price"> & {
 
 export interface SaleWithPersonData extends Sale {
     person: Person;
-    user: UserWithPersonData;
+    turn: {
+        id: string;
+        date_time_start: Date;
+        base_cash: unknown | number;
+        date_time_end?: Date;
+        final_cash?: unknown | number;
+        is_active: boolean;
+        user: Partial<UserWithPersonData>;
+    }
+}
+
+export type SaleWithPersonDataOptional = Partial<Sale>;
+
+export type ReportByMonth = {
+    total: number;
+    chartData: ValueOfDay[];
 }

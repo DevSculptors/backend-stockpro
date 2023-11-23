@@ -5,7 +5,7 @@ import { CreatePerson,UpdatePerson, Person } from "../interfaces/Person";
 export const getPersons = async (skip: number, limit: number): Promise<Person[]> => {
   const persons: Person[] = await prisma.person.findMany({
     skip: skip,
-    take: limit,
+    // take: limit,
     orderBy: {
       name: "asc"
     }
@@ -66,7 +66,7 @@ export const getClients = async (skip: number, limit: number): Promise<Person[]>
       }
     },
     skip: skip,
-    take: limit,
+    // take: limit,
     orderBy: {
       name: "asc"
     }
