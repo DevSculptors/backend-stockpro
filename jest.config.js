@@ -5,5 +5,6 @@ module.exports = {
     testMatch:["**/**/*.test.ts"],
     verbose: true,
     forceExit : true,
+    maxConcurrency: 1,
     //clearMocks: true,
 };

@@ -29,7 +29,6 @@ export const getCategoryByName = async (name: string): Promise<CategoryProduct> 
 }
 
 export const getCategoryById = async (id: string): Promise<CategoryProduct> => {
-    console.error(id);
     const categoryProduct: CategoryProduct = await prisma.category_Product.findUnique({
         where: {
             id: id

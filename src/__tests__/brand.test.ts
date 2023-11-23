@@ -3,11 +3,11 @@ import { app } from "../index";
 import { GenerateTokenPayload } from "../interfaces/User";
 import { GenerateToken } from "../helpers/Token";
 
-describe('Brand', () => {
+describe('Brand module', () => {
   let authToken: string
     beforeAll(async() => {
      authToken = await GenerateToken({
-      userId: "8509ac75-75cb-4f21-b2fc-5cd2db3eb26f",
+      userId: "839f504e-5a69-4b44-84ba-a9631ca17468",
       role:"admin",
     } as GenerateTokenPayload);
   });
@@ -22,7 +22,7 @@ describe('Brand', () => {
 
   it('should create a new brand and return a 200', async () => {
     const newBrand = {
-      name: 'Nueva Marca',
+      name: 'Nueva Marca 2',
       is_active: true,
       description: 'Descripción de la nueva marca',
     };
@@ -33,16 +33,20 @@ describe('Brand', () => {
       .send(newBrand);
 
     expect(response.status).toBe(200);
-    
+    expect(response.body.id).toBeDefined();
+    const id = response.body.id;
+    await supertest(app)
+      .delete(`/api/brand/${id}`)
+      .set('Authorization', `Bearer ${authToken}`);
   });
 
   it('should change the state of a brand and return a 200', async () => {
     
-    const brandId = '5300ff50-04f2-49f7-865d-da0486c4de0c';
+    const brandId = 'c56aaf9b-e656-4e60-87c8-8271366eaa1f';
 
     const changeStateRequest = {
       id: brandId, 
-      is_active: false, // Cambia el estado según tus necesidades
+      is_active: true, // Cambia el estado según tus necesidades
     };
 
     const response = await supertest(app)
@@ -54,7 +58,7 @@ describe('Brand', () => {
   });
 
   it('should update a brand by ID and return a 201', async () => {
-    const brandId = '5300ff50-04f2-49f7-865d-da0486c4de0c';
+    const brandId = 'c56aaf9b-e656-4e60-87c8-8271366eaa1f';
 
     const updatedBrand = {
       name: 'Marca Actualizada',
@@ -71,7 +75,7 @@ describe('Brand', () => {
   });
   
   it('should get a brand by ID and return a 200', async () => {
-    const brandId = '5300ff50-04f2-49f7-865d-da0486c4de0c';
+    const brandId = 'c56aaf9b-e656-4e60-87c8-8271366eaa1f';
 
     const response = await supertest(app)
       .get(`/api/brand/${brandId}`)
@@ -80,7 +84,7 @@ describe('Brand', () => {
     expect(response.status).toBe(200);
   });
 
-
-  
-
+  afterAll(async () => {
+    
+  });
 });

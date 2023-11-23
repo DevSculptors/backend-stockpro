@@ -3,11 +3,11 @@ import { app } from "../index";
 import { GenerateTokenPayload } from "../interfaces/User";
 import { GenerateToken } from "../helpers/Token";
 
-describe('Category', () => {
+describe('Category module', () => {
   let authToken: string
     beforeAll(async() => {
      authToken = await GenerateToken({
-      userId: "8509ac75-75cb-4f21-b2fc-5cd2db3eb26f",
+      userId: "839f504e-5a69-4b44-84ba-a9631ca17468",
       role:"admin",
     } as GenerateTokenPayload);
   });
@@ -22,7 +22,7 @@ describe('Category', () => {
 
   it('should create a new category and return a 200', async () => {
     const newCategory = {
-      name: 'Nueva Categoría1',
+      name: 'Nueva Categoría',
       is_active: true,
       description: 'Descripción de la nueva categoría',
     };
@@ -33,11 +33,15 @@ describe('Category', () => {
       .send(newCategory);
 
     expect(response.status).toBe(200);
-    
+    expect(response.body.id).toBeDefined();
+    const id = response.body.id;
+    await supertest(app)
+      .delete(`/api/category/${id}`)
+      .set('Authorization', `Bearer ${authToken}`);
   });
 
   it('should get a category by ID and return a 200', async () => {
-    const categoryId = '271b37de-bee5-4e9a-a124-425cdacc30df';
+    const categoryId = '0a8b75a6-2438-485b-8747-f4ed352650a1';
 
     const response = await supertest(app)
       .get(`/api/category/${categoryId}`)
@@ -49,7 +53,7 @@ describe('Category', () => {
 
   it('should change the state of a category and return a 200', async () => {
     
-    const categoryId = 'eb374ef6-507a-4b6e-a979-bfb9cf853f76';
+    const categoryId = '0a8b75a6-2438-485b-8747-f4ed352650a1';
 
     const changeStateRequest = {
       id: categoryId, 
@@ -66,7 +70,7 @@ describe('Category', () => {
 
   it('should update a category by ID and return a 200', async () => {
     // Reemplaza 'category-123' con un ID de categoría válido
-    const categoryId = '271b37de-bee5-4e9a-a124-425cdacc30df';
+    const categoryId = '0a8b75a6-2438-485b-8747-f4ed352650a1';
 
     const updatedCategory = {
       name: 'Categoría Actualizada',
@@ -82,5 +86,8 @@ describe('Category', () => {
     expect(response.status).toBe(200);
   });
   
+  afterAll(async () => {
+    
+  });
 
 });
